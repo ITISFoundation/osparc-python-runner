@@ -2,6 +2,8 @@
 
 oSparc Python Runner
 
+![Github-CI](https://github.com/ITISFoundation/osparc-python-runner/workflows/Github-CI%20Push/PR%20osparc-python-runner/badge.svg)
+
 ## Usage
 
 ```console
