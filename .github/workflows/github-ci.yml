@@ -59,4 +59,4 @@ jobs:
         name: deploy
         run: |
           ./ci/helpers/dockerhub_login.bash
-          make push-force
+          make push-version
