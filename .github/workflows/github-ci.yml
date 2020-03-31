@@ -10,7 +10,6 @@ env:
   DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
   DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
 
-
 jobs:
   build:
     name: building osparc-python-runner
@@ -36,6 +35,9 @@ jobs:
           key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
           restore-keys: |
             ${{ runner.os }}-pip-
+      - name: set docker image tag
+        if: github.ref != 'refs/heads/master'
+        run: ::set-env name=DOCKER_IMAGE_TAG::${GITHUB_REF##*/}
       - name: set dev environs
         run: make devenv
       - name: get current image if available
