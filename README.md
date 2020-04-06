@@ -11,13 +11,13 @@ oSparc service that allows running any python-based script either as simple scri
 ## Development
 
 ```console
-make help
+make help                                # shows Makefile help
 
-make devenv
-source .venv/bin/activate
-make build
-make info-build
-make tests
+make devenv                              # creates python virtual environment
+source .venv/bin/activate                # activates python virtual environment
+make build                               # builds oSparc compatible docker image
+make info-build                          # shows oSparc compatible docker image
+make tests                               # tests oSparc compatible docker image
 ```
 
 ## CI/CD Integration
