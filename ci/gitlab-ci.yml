@@ -15,9 +15,14 @@ before_script:
 # ------- osparc-python-runner
 # --------------------------------------------------------------------------------------------
 osparc-python-runner-build:
+  tags:
+    - ubuntu_DOCKER
   stage: build
+  tags:
+    - ubuntu_DOCKER
   except:
-    - staging
+    refs:
+      - staging
   script:
     - echo "$SC_CI_TESTING_REGISTRY_PASSWORD" | docker login -u "$SC_CI_TESTING_REGISTRY_USER" --password-stdin $SC_CI_TESTING_REGISTRY
     - cd $SC_CI_OSPARC_PYTHON_RUNNER_LOCATION
@@ -27,6 +32,9 @@ osparc-python-runner-build:
     - make build
     - make push-force
   only:
+    refs:
+      - branches
+      - merge_requests
     changes:
       - "**/osparc-python-runner/**/*"
   environment:
@@ -34,7 +42,13 @@ osparc-python-runner-build:
     on_stop: remove_osparc-python-runner_builds
 
 remove_osparc-python-runner_builds:
+  tags:
+    - ubuntu_DOCKER
   stage: build
+  only:
+    refs:
+      - branches
+      - merge_requests
   script:
     - export DOCKER_REGISTRY=$SC_CI_TESTING_REGISTRY
     - export DOCKER_PROJECT=$SC_CI_PROJECT_PATH_NAME/simcore/services/comp/osparc-python-runner
@@ -47,14 +61,22 @@ remove_osparc-python-runner_builds:
     action: stop
 
 osparc-python-runner-unit-test:
+  tags:
+    - ubuntu_DOCKER
   stage: test
+  tags:
+    - ubuntu_DOCKER
   except:
-    - staging
+    refs:
+      - staging
   script:
-    - pip install -r $SC_CI_OSPARC_PYTHON_RUNNER_LOCATION/tests/requirements.txt
+    - pip install -r $SC_CI_OSPARC_PYTHON_RUNNER_LOCATION/requirements.txt
     - cd $SC_CI_OSPARC_PYTHON_RUNNER_LOCATION
-    - make tests-unit
+    - make unit-test
   only:
+    refs:
+      - branches
+      - merge_requests
     changes:
       - "**/osparc-python-runner/**/*"
   artifacts:
@@ -65,17 +87,25 @@ osparc-python-runner-unit-test:
       - $SC_CI_OSPARC_PYTHON_RUNNER_LOCATION/pytest_unittest.xml
 
 osparc-python-runner-integration-test:
+  tags:
+    - ubuntu_DOCKER
   stage: test
+  tags:
+    - ubuntu_DOCKER
   except:
-    - staging
+    refs:
+      - staging
   script:
     - echo "$SC_CI_TESTING_REGISTRY_PASSWORD" | docker login -u "$SC_CI_TESTING_REGISTRY_USER" --password-stdin $SC_CI_TESTING_REGISTRY
-    - pip install -r $SC_CI_OSPARC_PYTHON_RUNNER_LOCATION/tests/requirements.txt
+    - pip install -r $SC_CI_OSPARC_PYTHON_RUNNER_LOCATION/requirements.txt
     - cd $SC_CI_OSPARC_PYTHON_RUNNER_LOCATION
     - export DOCKER_REGISTRY=$SC_CI_TEST_IMAGE_PREFIX
     - make pull-latest
-    - make tests-integration
+    - make integration-test  
   only:
+    refs:
+      - branches
+      - merge_requests
     changes:
       - "**/osparc-python-runner/**/*"
   artifacts:
@@ -86,9 +116,14 @@ osparc-python-runner-integration-test:
       - $SC_CI_OSPARC_PYTHON_RUNNER_LOCATION/pytest_integrationtest.xml
 
 osparc-python-runner-master:
+  tags:
+    - ubuntu_DOCKER
   stage: deploy
+  tags:
+    - ubuntu_DOCKER
   only:
-    - master
+    refs:
+      - master
   script:
     - echo "$SC_CI_TESTING_REGISTRY_PASSWORD" | docker login -u "$SC_CI_TESTING_REGISTRY_USER" --password-stdin $SC_CI_TESTING_REGISTRY
     - echo "$SC_CI_MASTER_REGISTRY_PASSWORD" | docker login -u "$SC_CI_MASTER_REGISTRY_USER" --password-stdin $SC_CI_MASTER_REGISTRY
@@ -103,9 +138,14 @@ osparc-python-runner-master:
     url: $SC_CI_MASTER_REGISTRY
 
 osparc-python-runner-staging:
+  tags:
+    - ubuntu_DOCKER
   stage: deploy
+  tags:
+    - ubuntu_DOCKER
   only:
-    - staging
+    refs:
+      - staging
   script:
     - echo "$SC_CI_MASTER_REGISTRY_PASSWORD" | docker login -u "$SC_CI_MASTER_REGISTRY_USER" --password-stdin $SC_CI_MASTER_REGISTRY
     - echo "$SC_CI_STAGING_REGISTRY_PASSWORD" | docker login -u "$SC_CI_STAGING_REGISTRY_USER" --password-stdin $SC_CI_STAGING_REGISTRY

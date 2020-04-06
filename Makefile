@@ -186,7 +186,7 @@ down: .compose-development.yml ## stops the service
 # MISCELANEOUS -----------------------------------
 .PHONY: replay
 replay: .cookiecutterrc ## re-applies cookiecutter
-	# Replaying /home/sanderegg/dev/github/cookiecutter-osparc-service ...
+	# Replaying gh:ITISFoundation/cookiecutter-osparc-service ...
 	@cookiecutter --no-input --overwrite-if-exists \
 		--config-file=$< \
 		--output-dir="$(abspath $(CURDIR)/..)" \
