@@ -18,7 +18,7 @@
 default_context:
 
     _extensions:               ['jinja2_time.TimeExtension']
-    _template:                 '/home/sanderegg/dev/github/cookiecutter-osparc-service'
+    _template:                 'gh:ITISFoundation/cookiecutter-osparc-service'
     author_affiliation:        "IT'IS Foundation"
     author_email:              'anderegg@itis.swiss'
     author_name:               'Sylvain Anderegg and Pedro Crespo'
