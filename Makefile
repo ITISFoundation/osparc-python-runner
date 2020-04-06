@@ -190,7 +190,7 @@ replay: .cookiecutterrc ## re-applies cookiecutter
 	@cookiecutter --no-input --overwrite-if-exists \
 		--config-file=$< \
 		--output-dir="$(abspath $(CURDIR)/..)" \
-		"/home/sanderegg/dev/github/cookiecutter-osparc-service"
+		"gh:ITISFoundation/cookiecutter-osparc-service"
 
 
 .PHONY: help
