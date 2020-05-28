@@ -15,6 +15,7 @@ logger = logging.getLogger("osparc-python-main")
 ENVIRONS = ["INPUT_FOLDER", "OUTPUT_FOLDER"]
 input_dir, output_dir = [Path(os.environ.get(v, None)) for v in ENVIRONS]
 
+# TODO: sync with schema in metadata!!
 OUTPUT_FILE = "output_data.zip"
 
 def copy(src, dest):
@@ -101,6 +102,10 @@ def setup():
     clean_dir(output_dir)
 
     # TODO: snapshot_before = list(input_dir.rglob("*"))
+
+    # NOTE The inputs defined in ${INPUT_FOLDER}/inputs.json are available as env variables by their key in capital letters
+    # For example: input_1 -> $INPUT_1
+    #
 
     logger.info("Processing input ...")
     unzip_dir(input_dir)
