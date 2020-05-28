@@ -1,6 +1,9 @@
 # tools
 pyyaml
 
+# formatter
+black
+
 # tests
 coverage==4.5.1 # TODO: Downgraded because of a bug https://github.com/nedbat/coveragepy/issues/716
 docker
