@@ -1,0 +1,9 @@
+# base
+numpy
+scipy
+pandas
+matplotlib
+seaborn
+
+# tools
+pipreqs

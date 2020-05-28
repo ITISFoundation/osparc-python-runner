@@ -15,6 +15,7 @@ logger = logging.getLogger("osparc-python-main")
 ENVIRONS = ["INPUT_FOLDER", "OUTPUT_FOLDER"]
 input_dir, output_dir = [Path(os.environ.get(v, None)) for v in ENVIRONS]
 
+OUTPUT_FILE = "output_data.zip"
 
 def copy(src, dest):
     try:
@@ -150,7 +151,7 @@ def teardown():
 
     # TODO: sync zipped name with docker/labels/outputs.json
     with tempfile.TemporaryDirectory() as tmpdir:
-        zipped_file = Path(f"{tmpdir}/output_data.zip")
+        zipped_file = Path(f"{tmpdir}/{OUTPUT_FILE}")
         with zipfile.ZipFile(str(zipped_file), "w", zipfile.ZIP_DEFLATED) as zh:
             zipdir(output_dir, zh)
 
