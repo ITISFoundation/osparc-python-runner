@@ -10,7 +10,12 @@ LABEL maintainer=sanderegg
 
 ENV SC_USER_ID 8004
 ENV SC_USER_NAME scu
-RUN adduser --uid ${SC_USER_ID} --disabled-password --gecos "" --shell /bin/sh --home /home/${SC_USER_NAME} ${SC_USER_NAME}
+
+RUN adduser \
+    --uid ${SC_USER_ID} \
+    --disabled-password \
+    --gecos "" \
+    --shell /bin/sh --home /home/${SC_USER_NAME} ${SC_USER_NAME}
 
 RUN apt-get update \
     && apt-get -y install --no-install-recommends \

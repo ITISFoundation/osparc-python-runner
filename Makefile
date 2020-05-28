@@ -37,6 +37,7 @@ APP_NAME := osparc-python-runner
 	# tooling
 	$@/bin/pip3 install pip-tools
 
+
 requirements.txt: .venv requirements.in
 	# freezes requirements
 	$</bin/pip-compile --upgrade --build-isolation --output-file $@ $(word2, $^)
@@ -52,6 +53,7 @@ devenv: .venv requirements.txt ## create a python virtual environment with tools
 
 # INTEGRATION -----------------------------------
 metatada = metadata/metadata.yml
+
 service.cli/run: $(metatada)
 	# Updates adapter script from metadata in $<
 	@.venv/bin/python3 tools/run_creator.py --metadata $< --runscript $@
@@ -71,7 +73,7 @@ endef
 
 
 
-# DOCKER ----------------------------------- 
+# DOCKER -----------------------------------
 .PHONY: build build-devel build-kit-devel build-x build-devel-x
 build build-devel build-kit build-kit-devel build-x build-devel-x: docker-compose-build.yml docker-compose-meta.yml service.cli/run ## builds images, -devel in development mode, -kit using docker buildkit, -x using docker buildX (if installed)
 	# building image local/${DOCKER_IMAGE_NAME}...
@@ -90,7 +92,7 @@ info-build: ## displays info on the built image
 
 
 
-# TESTS----------------------------------- 
+# TESTS-----------------------------------
 .PHONY: tests tests-unit tests-integration
 tests-unit tests-integration: ## runs integration and unit tests
 	@.venv/bin/pytest -vv \
@@ -104,7 +106,7 @@ tests-unit tests-integration: ## runs integration and unit tests
 tests: tests-unit tests-integration ## runs unit and integration tests
 
 
-# PUBLISHING ----------------------------------- 
+# PUBLISHING -----------------------------------
 define _bumpversion
 	# upgrades as $(subst $(1),,$@) version, commits and tags
 	@bump2version --verbose --list --config-file $(1) $(subst $(2),,$@)
@@ -143,7 +145,7 @@ version-integration-patch version-integration-minor version-integration-major: v
 	@$(call _bumpversion,$<,version-integration-)
 
 
-# DEVELOPMENT ---------------------------------------- 
+# DEVELOPMENT ----------------------------------------
 # NOTE: since using docker-compose would create the folders automatically but as root user, which is inconvenient
 define _clean_output_dirs
 	# cleaning output directory

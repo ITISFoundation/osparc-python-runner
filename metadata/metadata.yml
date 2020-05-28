@@ -16,7 +16,7 @@ inputs:
   input_1:
     displayOrder: 1
     label: Input data
-    description: Data accessible to the node. Can contain code, requirements or data.
+    description: Any code, requirements or data file
     type: data:*/*
 outputs:
   output_1:
