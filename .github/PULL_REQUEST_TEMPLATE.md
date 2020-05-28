@@ -19,3 +19,4 @@
 
 - [ ] Unit tests for the changes exist
 - [ ] Documentation reflects the changes
+- [ ] Update version ``make version-service-*``
