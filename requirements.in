@@ -1,3 +1,7 @@
+git+https://github.com/pcrespov/osparc-simcore.git@is1884/integration-library#egg=simcore-service-integration&subdirectory=packages/service-integration
+#-e ../osparc-simcore/packages/service-integration
+
+
 # versioning
 bumpversion
 
@@ -6,12 +10,10 @@ black
 
 # tests
 coverage
-docker
-jsonschema
+
 pytest
 pytest-cookies
 pytest-cov
 pytest-instafail
 pytest-mock
 pytest-sugar
-pyyaml

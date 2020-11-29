@@ -56,11 +56,11 @@ metatada = metadata/metadata.yml
 
 service.cli/run: $(metatada)
 	# Updates adapter script from metadata in $<
-	@.venv/bin/python3 tools/run_creator.py --metadata $< --runscript $@
+	@simcore-service-integrator run-creator --metadata $< --runscript $@
 
 docker-compose-meta.yml: $(metatada)
 	# Injects metadata from $< as labels
-	@.venv/bin/python3 tools/update_compose_labels.py --compose $@ --metadata $<
+	@simcore-service-integrator update-compose-labels --compose $@ --metadata $<
 
 define _docker_compose_build
 export DOCKER_BUILD_TARGET=$(if $(findstring -devel,$@),development,$(if $(findstring -cache,$@),cache,production)); \
@@ -211,3 +211,10 @@ clean: ## cleans all unversioned files in project and temp files create by this 
 	@echo -n "Are you sure? [y/N] " && read ans && [ $${ans:-N} = y ]
 	@echo -n "$(shell whoami), are you REALLY sure? [y/N] " && read ans && [ $${ans:-N} = y ]
 	@git clean $(git_clean_args)
+
+
+
+.PHONY: info
+info:
+	# integration tools
+	@simcore-service-integrator --version
