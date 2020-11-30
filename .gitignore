@@ -126,8 +126,9 @@ tmp/
 *ignore*
 .tmp*
 
-# vscode configuration
-.vscode
+# IDEs config
+.vscode/launch.json
+.vscode/settings.json
 
 # make outputs
 pytest_*.xml
@@ -137,5 +138,3 @@ pytest_*.xml
 !validation/**/*
 # docker ignore
 !.dockerignore
-# git ignore
-!.gitignore

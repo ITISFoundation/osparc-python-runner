@@ -1,0 +1,42 @@
+// This is a template. Clone and replace extension ".template.json" by ".json"
+{
+  "editor.tabSize": 2,
+  "editor.insertSpaces": true,
+  "editor.detectIndentation": false,
+  "files.associations": {
+    ".*rc": "ini",
+    ".env*": "ini",
+    "Dockerfile*": "dockerfile",
+    "**/requirements/*.txt": "pip-requirements",
+    "**/requirements/*.in": "pip-requirements",
+    "*Makefile": "makefile",
+    "*.cwl": "yaml"
+  },
+  "files.eol": "\n",
+  "files.exclude": {
+    "**/__pycache__": true
+  },
+  "files.insertFinalNewline": true,
+  "files.trimFinalNewlines": true,
+  "files.trimTrailingWhitespace": true,
+  "python.formatting.autopep8Args": [
+    "--max-line-length 140"
+  ],
+  "python.analysis.extraPaths": [],
+  "python.linting.pylintEnabled": true,
+  "python.linting.enabled": true,
+  "python.pythonPath": ".venv/bin/python",
+  "[python]": {
+    "editor.detectIndentation": false,
+    "editor.tabSize": 4
+  },
+  "[makefile]": {
+    "editor.insertSpaces": false
+  },
+  "python.testing.pyTestEnabled": true,
+  "python.formatting.provider": "black",
+  "python.sortImports.path": "${VIRTUAL_ENV}/bin/isort",
+  "python.sortImports.args": [
+    "--settings-path=${workspaceFolder}/.isort.cfg"
+  ]
+}
