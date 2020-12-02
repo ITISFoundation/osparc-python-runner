@@ -16,9 +16,13 @@ export VCS_REF:=$(shell git rev-parse --short HEAD || echo unversioned)
 export VCS_STATUS:=$(if $(shell git status -s || echo unversioned),'modified/untracked','clean')
 export BUILD_DATE:=$(shell date -u +"%Y-%m-%dT%H:%M:%SZ")
 
+METADATA := metadata/metadata.yml
+CURRENT_VERSION := $(shell simcore-service-integrator get-version --metadata-file $(METADATA))
+CURRENT_INTEGRATION_VERSION := $(shell simcore-service-integrator get-version --metadata-file $(METADATA) integration-version)
+
 export DOCKER_REGISTRY ?= itisfoundation
 export DOCKER_IMAGE_NAME ?= osparc-python-runner
-export DOCKER_IMAGE_TAG ?= $(shell cat VERSION)
+export DOCKER_IMAGE_TAG ?= $(CURRENT_VERSION)
 
 export COMPOSE_INPUT_DIR := ./validation/input
 export COMPOSE_OUTPUT_DIR := .tmp/output
@@ -52,13 +56,12 @@ devenv: .venv requirements.txt ## create a python virtual environment with tools
 
 
 # INTEGRATION -----------------------------------
-metatada = metadata/metadata.yml
 
-service.cli/run: $(metatada)
+service.cli/run: $(METADATA)
 	# Updates adapter script from metadata in $<
 	@simcore-service-integrator run-creator --metadata $< --runscript $@
 
-docker-compose-meta.yml: $(metatada)
+docker-compose-meta.yml: $(METADATA)
 	# Injects metadata from $< as labels
 	@simcore-service-integrator update-compose-labels --compose $@ --metadata $<
 
@@ -107,14 +110,18 @@ tests: tests-unit tests-integration ## runs unit and integration tests
 
 
 # PUBLISHING -----------------------------------
-define _bumpversion
-	# upgrades as $(subst $(1),,$@) version, commits and tags
-	@bump2version --verbose --list --config-file $(1) $(subst $(2),,$@)
-endef
+
+
 
 .PHONY: version-service-patch version-service-minor version-service-major
-version-service-patch version-service-minor version-service-major: versioning/service.cfg ## kernel/service versioning as patch
-	@$(call _bumpversion,$<,version-service-)
+version-service-patch version-service-minor version-service-major: $(METADATA) ## kernel/service versioning as patch
+	simcore-service-integrator bump-version --metadata-file $<  --upgrade $(subst version-service-,,$@)
+
+.PHONY: version-integration-patch version-integration-minor version-integration-major
+version-integration-patch version-integration-minor version-integration-major: $(METADATA) ## integration versioning as patch (bug fixes not affecting API/handling), minor/major (backwards-compatible/INcompatible API changes)
+	simcore-service-integrator bump-version --metadata-file $<  --upgrade $(subst version-integration-,,$@) integration-version
+
+
 
 .PHONY: push push-force push-version push-latest pull-latest pull-version tag-latest tag-version
 tag-latest tag-version:
@@ -140,9 +147,6 @@ pull-latest pull-version: ## pull service from registry
 	@docker pull $(DOCKER_REGISTRY)/$(DOCKER_IMAGE_NAME):$(if $(findstring version,$@),$(DOCKER_IMAGE_TAG),latest)
 
 
-.PHONY: version-integration-patch version-integration-minor version-integration-major
-version-integration-patch version-integration-minor version-integration-major: versioning/integration.cfg ## integration versioning as patch (bug fixes not affecting API/handling), minor/major (backwards-compatible/INcompatible API changes)
-	@$(call _bumpversion,$<,version-integration-)
 
 
 # DEVELOPMENT ----------------------------------------
@@ -217,4 +221,17 @@ clean: ## cleans all unversioned files in project and temp files create by this 
 .PHONY: info
 info:
 	# integration tools
-	@simcore-service-integrator --version
+	simcore-service-integrator --version
+	# variables
+	@echo VCS_URL                     : $(VCS_URL)
+	@echo VCS_REF                     : $(VCS_REF)
+	@echo VCS_STATUS                  : $(VCS_STATUS)
+	@echo BUILD_DATE                  : $(BUILD_DATE)å
+	@echo METADATA                    : $(METADATA)
+	@echo CURRENT_VERSION             : $(CURRENT_VERSION)
+	@echo CURRENT_INTEGRATION_VERSION : $(CURRENT_INTEGRATION_VERSION)
+	@echo DOCKER_REGISTRY             : $(DOCKER_REGISTRY)
+	@echo DOCKER_IMAGE_NAME           : $(DOCKER_IMAGE_NAME)
+	@echo DOCKER_IMAGE_TAG            : $(DOCKER_IMAGE_TAG)
+	@echo COMPOSE_INPUT_DIR           : $(COMPOSE_INPUT_DIR)
+	@echo COMPOSE_OUTPUT_DIR          : $(COMPOSE_OUTPUT_DIR)
