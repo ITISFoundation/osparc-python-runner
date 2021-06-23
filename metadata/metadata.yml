@@ -46,23 +46,3 @@ outputs:
     type: data:*/*
     fileToKeyMap:
       output_data.zip: output_1
-  output_2:
-    displayOrder: 2
-    label: Additional output data - must be named output_2
-    description: Additional output data to be directly used by script
-    type: data:*/*
-  output_3:
-    displayOrder: 3
-    label: Additional output data - must be named output_3
-    description: Additional output data to be directly used by script
-    type: data:*/*
-  output_4:
-    displayOrder: 4
-    label: Additional output data - must be named output_4
-    description: Additional output data to be directly used by script
-    type: data:*/*
-  output_5:
-    displayOrder: 5
-    label: Additional output data - must be named output_5
-    description: Additional output data to be directly used by script
-    type: data:*/*
