@@ -10,7 +10,6 @@ env:
   DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
   DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
 
-
 jobs:
   build:
     name: building osparc-python-runner
@@ -18,13 +17,13 @@ jobs:
     strategy:
       matrix:
         python: [3.8]
-        os: [ubuntu-18.04]
+        os: [ubuntu-20.04]
         node: [10]
       fail-fast: false
     steps:
       - uses: actions/checkout@v2
       - name: setup python environment
-        uses: actions/setup-python@v1.1.1
+        uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python }}
       - name: show versions
