@@ -18,6 +18,26 @@ inputs:
     label: Input data
     description: Any code, requirements or data file
     type: data:*/*
+  input_2:
+    displayOrder: 2
+    label: Additional input data
+    description: Any additional input data file
+    type: data:*/*
+  input_3:
+    displayOrder: 3
+    label: Additional input data
+    description: Any additional input data file
+    type: data:*/*
+  input_4:
+    displayOrder: 4
+    label: Additional input data
+    description: Any additional input data file
+    type: data:*/*
+  input_5:
+    displayOrder: 5
+    label: Additional input data
+    description: Any additional input data file
+    type: data:*/*
 outputs:
   output_1:
     displayOrder: 1
@@ -26,3 +46,23 @@ outputs:
     type: data:*/*
     fileToKeyMap:
       output_data.zip: output_1
+  output_2:
+    displayOrder: 2
+    label: Additional output data
+    description: Additional output data to be directly used by script
+    type: data:*/*
+  output_3:
+    displayOrder: 3
+    label: Additional output data
+    description: Additional output data to be directly used by script
+    type: data:*/*
+  output_4:
+    displayOrder: 4
+    label: Additional output data
+    description: Additional output data to be directly used by script
+    type: data:*/*
+  output_5:
+    displayOrder: 5
+    label: Additional output data
+    description: Additional output data to be directly used by script
+    type: data:*/*
