@@ -1,4 +1,4 @@
-name: Github-CI Push/PR osparc-python-runner
+name: build/deploy osparc-python-runner
 
 on:
   push:
