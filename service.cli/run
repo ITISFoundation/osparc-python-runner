@@ -12,6 +12,14 @@ json_input=$INPUT_FOLDER/inputs.json
         
 INPUT_1=$INPUT_FOLDER/input_1
 export INPUT_1
+INPUT_2=$INPUT_FOLDER/input_2
+export INPUT_2
+INPUT_3=$INPUT_FOLDER/input_3
+export INPUT_3
+INPUT_4=$INPUT_FOLDER/input_4
+export INPUT_4
+INPUT_5=$INPUT_FOLDER/input_5
+export INPUT_5
 
 exec execute.sh
         

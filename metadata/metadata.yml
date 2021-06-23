@@ -2,7 +2,7 @@ name: oSparc Python Runner
 key: simcore/services/comp/osparc-python-runner
 type: computational
 integration-version: 1.0.0
-version: 1.1.0
+version: 1.2.0
 description: oSparc Python Runner
 contact: anderegg@itis.swiss
 authors:
@@ -17,6 +17,26 @@ inputs:
     displayOrder: 1
     label: Input data
     description: Any code, requirements or data file
+    type: data:*/*
+  input_2:
+    displayOrder: 2
+    label: Additional input data - optional
+    description: Any additional input data file
+    type: data:*/*
+  input_3:
+    displayOrder: 3
+    label: Additional input data - optional
+    description: Any additional input data file
+    type: data:*/*
+  input_4:
+    displayOrder: 4
+    label: Additional input data - optional
+    description: Any additional input data file
+    type: data:*/*
+  input_5:
+    displayOrder: 5
+    label: Additional input data - optional
+    description: Any additional input data file
     type: data:*/*
 outputs:
   output_1:
