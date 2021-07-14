@@ -128,6 +128,7 @@ def setup():
         "set -o nounset",
         "IFS=$(printf '\\n\\t')",
         'echo "Creating virtual environment ..."',
+        f'export PYTHONPATH="{input_dir}";$PYTHONPATH',
         f"python3 -m venv --system-site-packages --symlinks --upgrade {venv_dir}",
         f"{venv_dir}/bin/pip install -U pip wheel setuptools",
         f"{venv_dir}/bin/pip install -r {requirements}",
