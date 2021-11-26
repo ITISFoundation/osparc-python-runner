@@ -16,7 +16,7 @@ export VCS_REF:=$(shell git rev-parse --short HEAD || echo unversioned)
 export VCS_STATUS:=$(if $(shell git status -s || echo unversioned),'modified/untracked','clean')
 export BUILD_DATE:=$(shell date -u +"%Y-%m-%dT%H:%M:%SZ")
 
-export PYTHON_VERSION := $(python3 -V | cut --delimiter=" " --fields=2)
+export PYTHON_VERSION := $(shell python3 -V | cut --delimiter=" " --fields=2)
 export DOCKER_REGISTRY ?= itisfoundation
 export DOCKER_IMAGE_NAME ?= osparc-python-runner-$(PYTHON_VERSION)
 export DOCKER_IMAGE_TAG ?= $(shell cat VERSION)
