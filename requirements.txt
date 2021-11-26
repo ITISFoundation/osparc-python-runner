@@ -30,7 +30,7 @@ click==8.0.1
     #   cookiecutter
 cookiecutter==1.7.3
     # via pytest-cookies
-coverage==5.5
+coverage==6.1.2
     # via
     #   -r requirements.in
     #   pytest-cov
