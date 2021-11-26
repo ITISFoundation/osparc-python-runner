@@ -16,8 +16,9 @@ export VCS_REF:=$(shell git rev-parse --short HEAD || echo unversioned)
 export VCS_STATUS:=$(if $(shell git status -s || echo unversioned),'modified/untracked','clean')
 export BUILD_DATE:=$(shell date -u +"%Y-%m-%dT%H:%M:%SZ")
 
+export PYTHON_VERSION := $(python3 -V | cut --delimiter=" " --fields=2)
 export DOCKER_REGISTRY ?= itisfoundation
-export DOCKER_IMAGE_NAME ?= osparc-python-runner
+export DOCKER_IMAGE_NAME ?= osparc-python-runner-$(PYTHON_VERSION)
 export DOCKER_IMAGE_TAG ?= $(shell cat VERSION)
 
 export COMPOSE_INPUT_DIR := ./validation/input
@@ -65,9 +66,9 @@ docker-compose-meta.yml: $(metatada)
 define _docker_compose_build
 export DOCKER_BUILD_TARGET=$(if $(findstring -devel,$@),development,$(if $(findstring -cache,$@),cache,production)); \
 $(if $(findstring -x,$@),\
-	docker buildx > /dev/null; export DOCKER_CLI_EXPERIMENTAL=enabled; docker buildx bake  --file docker-compose-build.yml --file docker-compose-meta.yml $(if $(findstring -nc,$@),--no-cache,);,\
+	docker buildx > /dev/null; export DOCKER_CLI_EXPERIMENTAL=enabled; docker buildx bake --build-arg PYTHON_VERSION="${PYTHON_VERSION}" --file docker-compose-build.yml --file docker-compose-meta.yml $(if $(findstring -nc,$@),--no-cache,);,\
 	$(if $(findstring -kit,$@),export DOCKER_BUILDKIT=1;export COMPOSE_DOCKER_CLI_BUILD=1;,) \
-	docker-compose --file docker-compose-build.yml --file docker-compose-meta.yml build $(if $(findstring -nc,$@),--no-cache,) --parallel;\
+	docker-compose --file docker-compose-build.yml --file docker-compose-meta.yml build --build-arg PYTHON_VERSION="${PYTHON_VERSION}" $(if $(findstring -nc,$@),--no-cache,) --parallel;\
 )
 endef
 

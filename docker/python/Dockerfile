@@ -1,4 +1,5 @@
-FROM python:3.8.10-slim as base
+ARG PYTHON_VERSION="3.8.10"
+FROM python:${PYTHON_VERSION}-slim as base
 #
 #  USAGE:
 #     cd services/osparc-python-runner
