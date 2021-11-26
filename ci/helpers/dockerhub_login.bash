@@ -1,11 +1,13 @@
 #!/bin/bash
 # http://redsymbol.net/articles/unofficial-bash-strict-mode/
-set -euo pipefail
+set -o errexit  # abort on nonzero exitstatus
+set -o nounset  # abort on unbound variable
+set -o pipefail # don't hide errors within pipes
 IFS=$'\n\t'
 
 # check needed variables are defined
-if [ ! -v DOCKER_USERNAME ] ||\
-    [ ! -v DOCKER_PASSWORD ] ||\
+if [ ! -v DOCKER_USERNAME ] ||
+    [ ! -v DOCKER_PASSWORD ] ||
     [ ! -v DOCKER_REGISTRY ]; then
     echo "## ERROR: Please define the environs (DOCKER_USERNAME, DOCKER_PASSWORD, DOCKER_REGISTRY) in your CI settings!"
     exit 1
