@@ -46,7 +46,7 @@ jinja2==3.0.1
     #   jinja2-time
 jinja2-time==0.2.0
     # via cookiecutter
-jsonschema==3.2.0
+jsonschema==4.2.1
     # via -r requirements.in
 markupsafe==2.0.1
     # via jinja2
@@ -103,7 +103,6 @@ requests==2.25.1
 six==1.16.0
     # via
     #   cookiecutter
-    #   jsonschema
     #   python-dateutil
 termcolor==1.1.0
     # via pytest-sugar
@@ -121,6 +120,3 @@ urllib3==1.26.5
     # via requests
 websocket-client==1.1.0
     # via docker
-
-# The following packages are considered to be unsafe in a requirements file:
-# setuptools
