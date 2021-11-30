@@ -34,7 +34,7 @@ coverage==6.2
     # via
     #   -r requirements.in
     #   pytest-cov
-docker==5.0.0
+docker==5.0.3
     # via -r requirements.in
 idna==2.10
     # via requests
