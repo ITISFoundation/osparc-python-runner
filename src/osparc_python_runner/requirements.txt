@@ -31,7 +31,7 @@ pandas==1.2.5
     # via
     #   -r requirements.in
     #   seaborn
-pillow==8.3.2
+pillow==9.0.0
     # via matplotlib
 pipreqs==0.4.10
     # via -r requirements.in
