@@ -70,7 +70,7 @@ pyparsing==2.4.7
     # via packaging
 pyrsistent==0.17.3
     # via jsonschema
-pytest==6.2.5
+pytest==7.0.0
     # via
     #   -r requirements.in
     #   pytest-cookies
@@ -106,12 +106,11 @@ termcolor==1.1.0
     # via pytest-sugar
 text-unidecode==1.3
     # via python-slugify
-toml==0.10.2
-    # via pytest
 tomli==1.2.2
     # via
     #   black
     #   coverage
+    #   pytest
 typing-extensions==4.0.0
     # via black
 urllib3==1.26.5
