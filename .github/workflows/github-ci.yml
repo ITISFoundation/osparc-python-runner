@@ -40,7 +40,7 @@ jobs:
         node: [10]
       fail-fast: false
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: setup docker buildx
         id: buildx
         uses: docker/setup-buildx-action@v1
@@ -48,7 +48,7 @@ jobs:
           version: ${{ matrix.docker_buildx }}
           driver: docker
       - name: setup python environment
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v3
         with:
           python-version: ${{ matrix.python }}
       - name: show versions
