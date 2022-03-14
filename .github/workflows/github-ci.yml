@@ -48,7 +48,7 @@ jobs:
           version: ${{ matrix.docker_buildx }}
           driver: docker
       - name: setup python environment
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v3
         with:
           python-version: ${{ matrix.python }}
       - name: show versions
