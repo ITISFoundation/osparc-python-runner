@@ -53,7 +53,7 @@ jobs:
           python-version: ${{ matrix.python }}
       - name: show versions
         run: ./ci/helpers/show_system_versions.bash
-      - uses: actions/cache@v3
+      - uses: actions/cache@v2
         name: getting cached data
         with:
           path: ~/.cache/pip
