@@ -13,7 +13,10 @@ logger = logging.getLogger("osparc-python-main")
 
 
 ENVIRONS = ["INPUT_FOLDER", "OUTPUT_FOLDER"]
-input_dir, output_dir = [Path(os.environ.get(v, None)) for v in ENVIRONS]
+try:
+    input_dir, output_dir = [Path(os.environ[v]) for v in ENVIRONS]
+except KeyError:
+    raise ValueError("Required env vars {ENVIRONS} were not set")
 
 # TODO: sync with schema in metadata!!
 OUTPUT_FILE = "output_data.zip"
@@ -118,7 +121,7 @@ def setup():
     logger.info("Found %s as main entrypoint", main_py)
 
     logger.info("Searching requirements ...")
-    requirements = ensure_requirements(input_dir)
+    requirements_txt = ensure_requirements(input_dir)
 
     logger.info("Preparing launch script ...")
     venv_dir = Path.home() / ".venv"
@@ -128,11 +131,11 @@ def setup():
         "set -o nounset",
         "IFS=$(printf '\\n\\t')",
         'echo "Creating virtual environment ..."',
-        f"python3 -m venv --system-site-packages --symlinks --upgrade {venv_dir}",
-        f"{venv_dir}/bin/pip install -U pip wheel setuptools",
-        f"{venv_dir}/bin/pip install -r {requirements}",
+        f'python3 -m venv --system-site-packages --symlinks --upgrade "{venv_dir}"',
+        f'"{venv_dir}/bin/pip" install -U pip wheel setuptools',
+        f'"{venv_dir}/bin/pip" install -r "{requirements_txt}"',
         f'echo "Executing code {main_py.name}..."',
-        f"{venv_dir}/bin/python3 {main_py}",
+        f'"{venv_dir}/bin/python3" "{main_py}"',
         'echo "DONE ..."',
     ]
     main_script_path = Path("main.sh")
