@@ -28,7 +28,7 @@ click==8.1.0
     # via
     #   black
     #   cookiecutter
-cookiecutter==1.7.3
+cookiecutter==2.1.1
     # via pytest-cookies
 coverage[toml]==6.3.2
     # via
@@ -62,8 +62,6 @@ platformdirs==2.5.1
     # via black
 pluggy==1.0.0
     # via pytest
-poyo==0.5.0
-    # via cookiecutter
 py==1.11.0
     # via pytest
 pyparsing==3.0.7
@@ -93,15 +91,15 @@ python-dateutil==2.8.2
 python-slugify==6.1.1
     # via cookiecutter
 pyyaml==6.0
-    # via -r requirements.in
+    # via
+    #   -r requirements.in
+    #   cookiecutter
 requests==2.27.1
     # via
     #   cookiecutter
     #   docker
 six==1.16.0
-    # via
-    #   cookiecutter
-    #   python-dateutil
+    # via python-dateutil
 termcolor==1.1.0
     # via pytest-sugar
 text-unidecode==1.3
