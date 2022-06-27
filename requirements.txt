@@ -82,7 +82,7 @@ pytest-cov==3.0.0
     # via -r requirements.in
 pytest-instafail==0.4.2
     # via -r requirements.in
-pytest-mock==3.7.0
+pytest-mock==3.8.1
     # via -r requirements.in
 pytest-sugar==0.9.4
     # via -r requirements.in
