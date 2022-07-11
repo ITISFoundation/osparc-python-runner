@@ -84,7 +84,7 @@ pytest-instafail==0.4.2
     # via -r requirements.in
 pytest-mock==3.8.1
     # via -r requirements.in
-pytest-sugar==0.9.4
+pytest-sugar==0.9.5
     # via -r requirements.in
 python-dateutil==2.8.2
     # via arrow
