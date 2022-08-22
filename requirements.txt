@@ -34,7 +34,7 @@ coverage[toml]==6.3.2
     # via
     #   -r requirements.in
     #   pytest-cov
-docker==5.0.3
+docker==6.0.0
     # via -r requirements.in
 idna==3.3
     # via requests
@@ -54,6 +54,7 @@ mypy-extensions==0.4.3
     # via black
 packaging==21.3
     # via
+    #   docker
     #   pytest
     #   pytest-sugar
 pathspec==0.9.0
@@ -110,6 +111,8 @@ tomli==2.0.1
     #   coverage
     #   pytest
 urllib3==1.26.9
-    # via requests
+    # via
+    #   docker
+    #   requests
 websocket-client==1.3.2
     # via docker
