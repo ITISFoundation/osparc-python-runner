@@ -117,7 +117,7 @@ def teardown():
         output_path = OUTPUT_FOLDER / f"output_{n+1}"
         archive_file_path = OUTPUT_FOLDER / OUTPUT_FILE_TEMPLATE.format(output_number=(n+1))
         logger.info("Zipping %s into %s...", output_path, archive_file_path)
-        shutil.make_archive(f"{(archive_file_path.parent / archive_file_path.stem)}", format="zip", root_dir=OUTPUT_FOLDER, base_dir=f"output_{n+1}", logger=logger)
+        shutil.make_archive(f"{(archive_file_path.parent / archive_file_path.stem)}", format="zip", root_dir=output_path, logger=logger)
         logger.info("Zipping %s into %s done", output_path, archive_file_path)
     logger.info("Zipping done.")
 
