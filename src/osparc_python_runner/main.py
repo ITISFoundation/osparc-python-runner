@@ -81,7 +81,7 @@ def setup():
     # For example: input_1 -> $INPUT_1
     #
 
-    logger.info("Processing input ...")
+    logger.info("Processing input from %s ...", INPUT_FOLDER)
     unzip_dir(INPUT_FOLDER)
 
     logger.info("Searching main entrypoint ...")
