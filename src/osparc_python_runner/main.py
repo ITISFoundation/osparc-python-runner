@@ -3,7 +3,6 @@ import os
 import shutil
 import subprocess
 import sys
-import zipfile
 from pathlib import Path
 
 logging.basicConfig(level=logging.INFO)
@@ -18,6 +17,8 @@ except KeyError:
 
 # NOTE: sync with schema in metadata!!
 NUM_OUTPUTS = 4
+OUTPUT_SUBFOLDER_ENV_TEMPLATE = "OUTPUT_{output_number}"
+OUTPUT_SUBFOLDER_TEMPLATE = "output_{output_number}"
 OUTPUT_FILE_TEMPLATE = "output_{output_number}.zip"
 
 
@@ -26,17 +27,8 @@ def run_cmd(cmd: str):
     # TODO: deal with stdout, log? and error??
 
 
-def unzip_dir(parent: Path):
-    for filepath in list(parent.rglob("*.zip")):
-        logger.info("Unzipping '%s'...", filepath.name)
-        if zipfile.is_zipfile(filepath):
-            with zipfile.ZipFile(filepath) as zf:
-                zf.extractall(filepath.parent)
-        logger.info("Unzipping '%s' done", filepath.name)
-
-
-
-def ensure_main_entrypoint(code_dir: Path) -> Path:
+def _ensure_main_entrypoint(code_dir: Path) -> Path:
+    logger.info("Searching for script main entrypoint ...")
     code_files = list(code_dir.rglob("*.py"))
 
     if not code_files:
@@ -50,10 +42,12 @@ def ensure_main_entrypoint(code_dir: Path) -> Path:
             raise ValueError(f"Many entrypoints found: {code_files}")
 
     main_py = code_files[0]
+    logger.info("Found %s as main entrypoint", main_py)
     return main_py
 
 
-def ensure_requirements(code_dir: Path) -> Path:
+def _ensure_requirements(code_dir: Path) -> Path:
+    logger.info("Searching for requirements file ...")
     requirements = list(code_dir.rglob("requirements.txt"))
     if len(requirements) > 1:
         raise ValueError(f"Many requirements found: {requirements}")
@@ -68,31 +62,29 @@ def ensure_requirements(code_dir: Path) -> Path:
 
     else:
         requirements = requirements[0]
+        logger.info(f"Found: {requirements}")
     return requirements
+
+def _ensure_output_subfolders():
+    for n in range(NUM_OUTPUTS):
+        output_sub_folder_env = f"OUTPUT_{n+1}"
+        output_sub_folder = OUTPUT_FOLDER / OUTPUT_SUBFOLDER_TEMPLATE.format(output_number=n+1)
+        output_sub_folder.mkdir(parents=True)
+        logger.info("ENV defined for subfolder: $%s=%s", output_sub_folder_env, output_sub_folder)
 
 
 def setup():
-    for n in range(NUM_OUTPUTS):
-        output_sub_folder = OUTPUT_FOLDER / f"output_{n+1}"
-        logger.info("Creating %s", f"{output_sub_folder=}")
-        output_sub_folder.mkdir(parents=True)
-        
-    # NOTE The inputs defined in ${INPUT_FOLDER}/inputs.json are available as env variables by their key in capital letters
-    # For example: input_1 -> $INPUT_1
-    #
-
-    logger.info("Processing input from %s ...", INPUT_FOLDER)
-    unzip_dir(INPUT_FOLDER)
-
-    logger.info("Searching main entrypoint ...")
-    user_main_py = ensure_main_entrypoint(INPUT_FOLDER)
-    logger.info("Found %s as main entrypoint", user_main_py)
-
-    logger.info("Searching requirements ...")
-    requirements_txt = ensure_requirements(INPUT_FOLDER)
+    _ensure_output_subfolders()
+    logger.info("Processing input from %s:", INPUT_FOLDER)
+    logger.info("%s", INPUT_FOLDER.glob("*"))
+    
+    # find entrypoint
+    user_main_py = _ensure_main_entrypoint(INPUT_FOLDER)
+    requirements_txt = _ensure_requirements(INPUT_FOLDER)
 
     logger.info("Preparing launch script ...")
     venv_dir = Path.home() / ".venv"
+    bash_env_export = [f"export {OUTPUT_SUBFOLDER_ENV_TEMPLATE.format(n+1)}={OUTPUT_FOLDER / OUTPUT_SUBFOLDER_TEMPLATE.format(output_number=n+1)}"  for n in range(NUM_OUTPUTS)]
     script = [
         "#!/bin/sh",
         "set -o errexit",
@@ -102,6 +94,7 @@ def setup():
         f'python3 -m venv --system-site-packages --symlinks --upgrade "{venv_dir}"',
         f'"{venv_dir}/bin/pip" install -U pip wheel setuptools',
         f'"{venv_dir}/bin/pip" install -r "{requirements_txt}"',
+        "\n".join(bash_env_export),
         f'echo "Executing code {user_main_py.name}..."',
         f'"{venv_dir}/bin/python3" "{user_main_py}"',
         'echo "DONE ..."',
