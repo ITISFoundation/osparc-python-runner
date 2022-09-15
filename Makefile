@@ -95,12 +95,16 @@ info-build: ## displays info on the built image
 # TESTS-----------------------------------
 .PHONY: tests tests-unit tests-integration
 tests-unit tests-integration: ## runs integration and unit tests
-	@.venv/bin/pytest -vv \
+	@.venv/bin/pytest \
 		--basetemp=$(CURDIR)/tmp \
+		--color=yes \
+		--cov-report=term-missing \
+		--durations=10 \
 		--exitfirst \
 		--failed-first \
-		--pdb \
 		--junitxml=pytest_$(subst tests-,,$@)test.xml \
+		--pdb \
+		-vv \
 		$(CURDIR)/tests/$(subst tests-,,$@)
 
 tests: tests-unit tests-integration ## runs unit and integration tests
