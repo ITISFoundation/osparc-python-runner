@@ -17,9 +17,9 @@ except KeyError:
 
 # NOTE: sync with schema in metadata!!
 NUM_OUTPUTS = 4
-OUTPUT_SUBFOLDER_ENV_TEMPLATE = "OUTPUT_{output_number}"
-OUTPUT_SUBFOLDER_TEMPLATE = "output_{output_number}"
-OUTPUT_FILE_TEMPLATE = "output_{output_number}.zip"
+OUTPUT_SUBFOLDER_ENV_TEMPLATE = "OUTPUT_{}"
+OUTPUT_SUBFOLDER_TEMPLATE = "output_{}"
+OUTPUT_FILE_TEMPLATE = "output_{}.zip"
 
 
 def run_cmd(cmd: str):
@@ -66,9 +66,9 @@ def _ensure_requirements(code_dir: Path) -> Path:
     return requirements
 
 def _ensure_output_subfolders():
-    for n in range(NUM_OUTPUTS):
-        output_sub_folder_env = f"OUTPUT_{n+1}"
-        output_sub_folder = OUTPUT_FOLDER / OUTPUT_SUBFOLDER_TEMPLATE.format(output_number=n+1)
+    for n in range(1, NUM_OUTPUTS+1):
+        output_sub_folder_env = f"OUTPUT_{n}"
+        output_sub_folder = OUTPUT_FOLDER / OUTPUT_SUBFOLDER_TEMPLATE.format(n)
         output_sub_folder.mkdir(parents=True)
         logger.info("ENV defined for subfolder: $%s=%s", output_sub_folder_env, output_sub_folder)
 
@@ -84,7 +84,7 @@ def setup():
 
     logger.info("Preparing launch script ...")
     venv_dir = Path.home() / ".venv"
-    bash_env_export = [f"export {OUTPUT_SUBFOLDER_ENV_TEMPLATE.format(n+1)}={OUTPUT_FOLDER / OUTPUT_SUBFOLDER_TEMPLATE.format(output_number=n+1)}"  for n in range(NUM_OUTPUTS)]
+    bash_env_export = [f"export {OUTPUT_SUBFOLDER_ENV_TEMPLATE.format(n)}={OUTPUT_FOLDER / OUTPUT_SUBFOLDER_TEMPLATE.format(n)}"  for n in range(1, NUM_OUTPUTS+1)]
     script = [
         "#!/bin/sh",
         "set -o errexit",
@@ -106,9 +106,9 @@ def setup():
 
 def teardown():
     logger.info("Zipping output...")
-    for n in range(NUM_OUTPUTS):
-        output_path = OUTPUT_FOLDER / f"output_{n+1}"
-        archive_file_path = OUTPUT_FOLDER / OUTPUT_FILE_TEMPLATE.format(output_number=(n+1))
+    for n in range(1, NUM_OUTPUTS+1):
+        output_path = OUTPUT_FOLDER / f"output_{n}"
+        archive_file_path = OUTPUT_FOLDER / OUTPUT_FILE_TEMPLATE.format(n)
         logger.info("Zipping %s into %s...", output_path, archive_file_path)
         shutil.make_archive(f"{(archive_file_path.parent / archive_file_path.stem)}", format="zip", root_dir=output_path, logger=logger)
         logger.info("Zipping %s into %s done", output_path, archive_file_path)
