@@ -23,31 +23,6 @@ NUM_OUTPUTS = 4
 OUTPUT_FILE_TEMPLATE = "output_{output_number}.zip"
 
 
-def copy(src, dest):
-    try:
-        src, dest = str(src), str(dest)
-        shutil.copytree(
-            src, dest, ignore=shutil.ignore_patterns("*.zip", "__pycache__", ".*")
-        )
-    except OSError as err:
-        # If the error was caused because the source wasn't a directory
-        if err.errno == shutil.errno.ENOTDIR:
-            shutil.copy(src, dest)
-        else:
-            logger.error("Directory not copied. Error: %s", err)
-
-
-def clean_dir(dirpath: Path):
-    for root, dirs, files in os.walk(dirpath):
-        for f in files:
-            os.unlink(os.path.join(root, f))
-        for d in dirs:
-            shutil.rmtree(os.path.join(root, d))
-
-def initiate_output_dirs(dirpath: Path):
-    for dir in [dirpath / "output1", dirpath / "output2", dirpath / "output3",dirpath / "output4"]:
-        dir.mkdir(exist_ok=True)
-
 def run_cmd(cmd: str):
     subprocess.run(cmd.split(), shell=False, check=True, cwd=INPUT_FOLDER)
     # TODO: deal with stdout, log? and error??
@@ -61,15 +36,6 @@ def unzip_dir(parent: Path):
                 zf.extractall(filepath.parent)
         logger.info("Unzipping '%s' done", filepath.name)
 
-
-def zipdir(dirpath: Path, ziph: zipfile.ZipFile):
-    """ Zips directory and archives files relative to dirpath
-    """
-    for root, dirs, files in os.walk(dirpath):
-        for filename in files:
-            filepath = os.path.join(root, filename)
-            ziph.write(filepath, arcname=os.path.relpath(filepath, dirpath))
-        dirs[:] = [name for name in dirs if not name.startswith(".")]
 
 
 def ensure_main_entrypoint(code_dir: Path) -> Path:
