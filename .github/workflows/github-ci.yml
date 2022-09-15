@@ -71,7 +71,7 @@ jobs:
         run: make pull-latest || true
       - name: build
         run: |
-          make build
+          make build-x
           make info-build
       - name: test
         run: make tests
