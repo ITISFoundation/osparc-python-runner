@@ -1,9 +1,11 @@
+import json
 import logging
 import os
 import shutil
 import subprocess
 import sys
 from pathlib import Path
+from typing import Dict
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("osparc-python-main")
@@ -22,12 +24,7 @@ OUTPUT_SUBFOLDER_TEMPLATE = "output_{}"
 OUTPUT_FILE_TEMPLATE = "output_{}.zip"
 
 
-def run_cmd(cmd: str):
-    subprocess.run(cmd.split(), shell=False, check=True, cwd=INPUT_FOLDER)
-    # TODO: deal with stdout, log? and error??
-
-
-def _ensure_main_entrypoint(code_dir: Path) -> Path:
+def _find_user_code_entrypoint(code_dir: Path) -> Path:
     logger.info("Searching for script main entrypoint ...")
     code_files = list(code_dir.rglob("*.py"))
 
@@ -46,7 +43,7 @@ def _ensure_main_entrypoint(code_dir: Path) -> Path:
     return main_py
 
 
-def _ensure_requirements(code_dir: Path) -> Path:
+def _ensure_pip_requirements(code_dir: Path) -> Path:
     logger.info("Searching for requirements file ...")
     requirements = list(code_dir.rglob("requirements.txt"))
     if len(requirements) > 1:
@@ -56,7 +53,12 @@ def _ensure_requirements(code_dir: Path) -> Path:
         # deduce requirements using pipreqs
         logger.info("Not found. Recreating requirements ...")
         requirements = code_dir / "requirements.txt"
-        run_cmd(f"pipreqs --savepath={requirements} --force {code_dir}")
+        subprocess.run(
+            f"pipreqs --savepath={requirements} --force {code_dir}".split(),
+            shell=False,
+            check=True,
+            cwd=INPUT_FOLDER,
+        )
 
         # TODO log subprocess.run
 
@@ -65,26 +67,40 @@ def _ensure_requirements(code_dir: Path) -> Path:
         logger.info(f"Found: {requirements}")
     return requirements
 
-def _ensure_output_subfolders():
-    for n in range(1, NUM_OUTPUTS+1):
+
+# TODO: Next version of integration will take care of this and maybe the ENVs as well
+def _ensure_output_subfolders_exist() -> Dict[str, str]:
+    output_envs = {}
+    for n in range(1, NUM_OUTPUTS + 1):
         output_sub_folder_env = f"OUTPUT_{n}"
         output_sub_folder = OUTPUT_FOLDER / OUTPUT_SUBFOLDER_TEMPLATE.format(n)
-        output_sub_folder.mkdir(parents=True)
-        logger.info("ENV defined for subfolder: $%s=%s", output_sub_folder_env, output_sub_folder)
+        # NOTE: exist_ok for forward compatibility in case they are already created
+        output_sub_folder.mkdir(parents=True, exist_ok=True)
+        output_envs[output_sub_folder_env] = output_sub_folder
+    logger.info(
+        "Output ENVs available: %s",
+        json.dumps(output_envs, indent=2),
+    )
+    return output_envs
 
 
 def setup():
-    _ensure_output_subfolders()
-    logger.info("Processing input from %s:", INPUT_FOLDER)
-    logger.info("%s", list(INPUT_FOLDER.glob("*")))
-    
-    # find entrypoint
-    user_main_py = _ensure_main_entrypoint(INPUT_FOLDER)
-    requirements_txt = _ensure_requirements(INPUT_FOLDER)
+    logger.info(
+        "Input ENVs available: %s",
+        json.dumps(
+            {f"INPUT_{n}": os.environ[f"INPUT_{n}"] for n in range(1, 6)}, indent=2
+        ),
+    )
+    output_envs = _ensure_output_subfolders_exist()
+    logger.info("Available data:")
+    os.system("ls -tlah")
+
+    user_code_entrypoint = _find_user_code_entrypoint(INPUT_FOLDER)
+    requirements_txt = _ensure_pip_requirements(INPUT_FOLDER)
 
     logger.info("Preparing launch script ...")
     venv_dir = Path.home() / ".venv"
-    bash_env_export = [f"export {OUTPUT_SUBFOLDER_ENV_TEMPLATE.format(n)}={OUTPUT_FOLDER / OUTPUT_SUBFOLDER_TEMPLATE.format(n)}"  for n in range(1, NUM_OUTPUTS+1)]
+    bash_env_export = [f"export {env}={path}" for env, path in output_envs.items()]
     script = [
         "#!/bin/sh",
         "set -o errexit",
@@ -95,22 +111,26 @@ def setup():
         f'"{venv_dir}/bin/pip" install -U pip wheel setuptools',
         f'"{venv_dir}/bin/pip" install -r "{requirements_txt}"',
         "\n".join(bash_env_export),
-        f'echo "Executing code {user_main_py.name}..."',
-        f'"{venv_dir}/bin/python3" "{user_main_py}"',
+        f'echo "Executing code {user_code_entrypoint.name}..."',
+        f'"{venv_dir}/bin/python3" "{user_code_entrypoint}"',
         'echo "DONE ..."',
     ]
     main_script_path = Path("main.sh")
     main_script_path.write_text("\n".join(script))
 
 
-
 def teardown():
     logger.info("Zipping output...")
-    for n in range(1, NUM_OUTPUTS+1):
+    for n in range(1, NUM_OUTPUTS + 1):
         output_path = OUTPUT_FOLDER / f"output_{n}"
         archive_file_path = OUTPUT_FOLDER / OUTPUT_FILE_TEMPLATE.format(n)
         logger.info("Zipping %s into %s...", output_path, archive_file_path)
-        shutil.make_archive(f"{(archive_file_path.parent / archive_file_path.stem)}", format="zip", root_dir=output_path, logger=logger)
+        shutil.make_archive(
+            f"{(archive_file_path.parent / archive_file_path.stem)}",
+            format="zip",
+            root_dir=output_path,
+            logger=logger,
+        )
         logger.info("Zipping %s into %s done", output_path, archive_file_path)
     logger.info("Zipping done.")
 
