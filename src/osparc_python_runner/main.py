@@ -76,7 +76,7 @@ def _ensure_output_subfolders():
 def setup():
     _ensure_output_subfolders()
     logger.info("Processing input from %s:", INPUT_FOLDER)
-    logger.info("%s", INPUT_FOLDER.glob("*"))
+    logger.info("%s", list(INPUT_FOLDER.glob("*")))
     
     # find entrypoint
     user_main_py = _ensure_main_entrypoint(INPUT_FOLDER)
