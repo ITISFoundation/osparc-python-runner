@@ -1,10 +1,8 @@
 import logging
 import os
-import pickle
 import shutil
 import subprocess
 import sys
-import tempfile
 import zipfile
 from pathlib import Path
 
@@ -109,9 +107,7 @@ def setup():
         'echo "DONE ..."',
     ]
     main_script_path = Path("main.sh")
-    with main_script_path.open("w") as fp:
-        for line in script:
-            print(f"{line}\n", file=fp)
+    main_script_path.write_text("\n".join(script))
 
 
 
