@@ -14,12 +14,14 @@ logger = logging.getLogger("osparc-python-main")
 
 ENVIRONS = ["INPUT_FOLDER", "OUTPUT_FOLDER"]
 try:
-    input_dir, output_dir = [Path(os.environ[v]) for v in ENVIRONS]
+    INPUT_FOLDER, OUTPUT_FOLDER = [Path(os.environ[v]) for v in ENVIRONS]
 except KeyError:
     raise ValueError("Required env vars {ENVIRONS} were not set")
 
-# TODO: sync with schema in metadata!!
-OUTPUT_FILE = "output_data.zip"
+# NOTE: sync with schema in metadata!!
+NUM_OUTPUTS = 4
+OUTPUT_FILE_TEMPLATE = "output_{output_number}.zip"
+
 
 def copy(src, dest):
     try:
@@ -42,17 +44,22 @@ def clean_dir(dirpath: Path):
         for d in dirs:
             shutil.rmtree(os.path.join(root, d))
 
+def initiate_output_dirs(dirpath: Path):
+    for dir in [dirpath / "output1", dirpath / "output2", dirpath / "output3",dirpath / "output4"]:
+        dir.mkdir(exist_ok=True)
 
 def run_cmd(cmd: str):
-    subprocess.run(cmd.split(), shell=False, check=True, cwd=input_dir)
+    subprocess.run(cmd.split(), shell=False, check=True, cwd=INPUT_FOLDER)
     # TODO: deal with stdout, log? and error??
 
 
 def unzip_dir(parent: Path):
     for filepath in list(parent.rglob("*.zip")):
+        logger.info("Unzipping '%s'...", filepath.name)
         if zipfile.is_zipfile(filepath):
             with zipfile.ZipFile(filepath) as zf:
                 zf.extractall(filepath.parent)
+        logger.info("Unzipping '%s' done", filepath.name)
 
 
 def zipdir(dirpath: Path, ziph: zipfile.ZipFile):
@@ -101,27 +108,24 @@ def ensure_requirements(code_dir: Path) -> Path:
 
 
 def setup():
-    logger.info("Cleaning output ...")
-    clean_dir(output_dir)
-
-    # TODO: snapshot_before = list(input_dir.rglob("*"))
-
+    for n in range(NUM_OUTPUTS):
+        output_sub_folder = OUTPUT_FOLDER / f"output_{n+1}"
+        logger.info("Creating %s", f"{output_sub_folder=}")
+        output_sub_folder.mkdir(parents=True)
+        
     # NOTE The inputs defined in ${INPUT_FOLDER}/inputs.json are available as env variables by their key in capital letters
     # For example: input_1 -> $INPUT_1
     #
 
     logger.info("Processing input ...")
-    unzip_dir(input_dir)
-
-    # logger.info("Copying input to output ...")
-    # copy(input_dir, code_dir)
+    unzip_dir(INPUT_FOLDER)
 
     logger.info("Searching main entrypoint ...")
-    main_py = ensure_main_entrypoint(input_dir)
-    logger.info("Found %s as main entrypoint", main_py)
+    user_main_py = ensure_main_entrypoint(INPUT_FOLDER)
+    logger.info("Found %s as main entrypoint", user_main_py)
 
     logger.info("Searching requirements ...")
-    requirements_txt = ensure_requirements(input_dir)
+    requirements_txt = ensure_requirements(INPUT_FOLDER)
 
     logger.info("Preparing launch script ...")
     venv_dir = Path.home() / ".venv"
@@ -134,8 +138,8 @@ def setup():
         f'python3 -m venv --system-site-packages --symlinks --upgrade "{venv_dir}"',
         f'"{venv_dir}/bin/pip" install -U pip wheel setuptools',
         f'"{venv_dir}/bin/pip" install -r "{requirements_txt}"',
-        f'echo "Executing code {main_py.name}..."',
-        f'"{venv_dir}/bin/python3" "{main_py}"',
+        f'echo "Executing code {user_main_py.name}..."',
+        f'"{venv_dir}/bin/python3" "{user_main_py}"',
         'echo "DONE ..."',
     ]
     main_script_path = Path("main.sh")
@@ -143,31 +147,16 @@ def setup():
         for line in script:
             print(f"{line}\n", file=fp)
 
-    # # TODO: take snapshot
-    # logger.info("Creating virtual environment ...")
-    # run_cmd("python3 -m venv --system-site-packages --symlinks --upgrade .venv")
-    # run_cmd(".venv/bin/pip install -U pip wheel setuptools")
-    # run_cmd(f".venv/bin/pip install -r {requirements}")
-
-    # # TODO: take snapshot
-    # logger.info("Executing code ...")
-    # run_cmd(f".venv/bin/python3 {main_py}")
 
 
 def teardown():
-    logger.info("Zipping output ....")
-
-    # TODO: sync zipped name with docker/labels/outputs.json
-    with tempfile.TemporaryDirectory() as tmpdir:
-        zipped_file = Path(f"{tmpdir}/{OUTPUT_FILE}")
-        with zipfile.ZipFile(str(zipped_file), "w", zipfile.ZIP_DEFLATED) as zh:
-            zipdir(output_dir, zh)
-
-        logger.info("Cleaning output")
-        clean_dir(output_dir)
-
-        logger.info("Moving %s", zipped_file.name)
-        shutil.move(str(zipped_file), str(output_dir))
+    logger.info("Zipping output...")
+    for n in range(NUM_OUTPUTS):
+        output_path = OUTPUT_FOLDER / f"output{n+1}"
+        archive_file_path = OUTPUT_FOLDER / OUTPUT_FILE_TEMPLATE.format(output_number=n)
+        logger.info("Zipping %s into %s", output_path, archive_file_path)
+        shutil.make_archive(f"{(archive_file_path.parent / archive_file_path.stem)}", format=archive_file_path.suffix, root_dir=output_path, logger=logger)
+    logger.info("Zipping done.")
 
 
 if __name__ == "__main__":
