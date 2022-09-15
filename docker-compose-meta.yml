@@ -22,8 +22,15 @@ services:
         io.simcore.name: '{"name": "oSparc Python Runner"}'
         io.simcore.outputs: '{"outputs": {"output_1": {"displayOrder": 1, "label":
           "Output data", "description": "All data produced by the script is zipped
-          as output_data.zip", "type": "data:*/*", "fileToKeyMap": {"output_data.zip":
-          "output_1"}}}}'
+          as output_1.zip", "type": "data:*/*", "fileToKeyMap": {"output_1.zip": "output_1"}},
+          "output_2": {"displayOrder": 2, "label": "Output data", "description": "All
+          data produced by the script is zipped as output_2.zip", "type": "data:*/*",
+          "fileToKeyMap": {"output_2.zip": "output_2"}}, "output_3": {"displayOrder":
+          3, "label": "Output data", "description": "All data produced by the script
+          is zipped as output_3.zip", "type": "data:*/*", "fileToKeyMap": {"output_3.zip":
+          "output_3"}}, "output_4": {"displayOrder": 4, "label": "Output data", "description":
+          "All data produced by the script is zipped as output_4.zip", "type": "data:*/*",
+          "fileToKeyMap": {"output_4.zip": "output_4"}}}}'
         io.simcore.type: '{"type": "computational"}'
         io.simcore.version: '{"version": "1.2.1"}'
         org.label-schema.build-date: ${BUILD_DATE}
