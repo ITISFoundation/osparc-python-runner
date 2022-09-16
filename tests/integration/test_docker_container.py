@@ -63,6 +63,15 @@ def docker_container(
     host_folders["input"].rmdir()
     shutil.copytree(validation_folders["input"], host_folders["input"])
     assert Path(host_folders["input"]).exists()
+    # prepare output folders
+    host_folders["output"].rmdir()
+    for output_folder in validation_folders["output"].glob("*"):
+        if not output_folder.is_dir():
+            continue
+        # create the same folder in the output
+        host_output_folder = host_folders["output"] / output_folder.name
+        host_output_folder.mkdir(parents=True)
+        assert host_output_folder.exists()
 
     # run the container (this may take some time)
     try:
