@@ -30,8 +30,8 @@ def test_progress():
 
 
 def test_inputs():
-    assert (Path(os.environ["INPUT_FOLDER"]) / "input_script_1.py").exists()
-    assert (Path(os.environ["INPUT_FOLDER"]) / "requirements.txt").exists()
+    assert (Path(os.environ["INPUT_1"]) / "input_script_1.py").exists()
+    assert (Path(os.environ["INPUT_1"]) / "requirements.txt").exists()
 
 
 def test_outputs():
