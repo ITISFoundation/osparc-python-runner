@@ -35,8 +35,8 @@ def test_inputs():
 
 
 def test_outputs():
-    """write a file in each output"""
-    for output_folder_env in [*(f"OUTPUT_{i}" for i in range(1, 5))]:
+    """write a file in each output, checks that write access is granted"""
+    for output_folder_env in (f"OUTPUT_{i}" for i in range(1, 5)):
         folder = Path(os.environ[output_folder_env])
         assert folder.exists()
         for number in range(1, 3):
