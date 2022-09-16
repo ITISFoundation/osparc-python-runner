@@ -1,11 +1,9 @@
 import json
 import logging
 import os
-import shutil
 import subprocess
 import sys
 from pathlib import Path
-from typing import Dict
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("osparc-python-main")
@@ -54,7 +52,7 @@ def _ensure_pip_requirements(code_dir: Path) -> Path:
 
     else:
         requirements = requirements[0]
-        logger.info(f"Found: {requirements}")
+        logger.info("Found: %s", requirements)
     return requirements
 
 
@@ -64,7 +62,13 @@ def _show_io_environments() -> None:
             "%s ENVs available: %s",
             io_type.capitalize(),
             json.dumps(
-                list(filter(lambda x: f"{io_type.upper()}_" in x, os.environ)), indent=2
+                list(
+                    filter(
+                        lambda x, io_type=io_type: f"{io_type.upper()}_" in x,
+                        os.environ,
+                    )
+                ),
+                indent=2,
             ),
         )
 
@@ -93,7 +97,7 @@ def setup():
         'echo "DONE ..."',
     ]
     main_script_path = Path("main.sh")
-    main_script_path.write_text("\n".join(script))
+    main_script_path.write_text("\n".join(script), encoding="utf-8")
 
 
 def teardown():
