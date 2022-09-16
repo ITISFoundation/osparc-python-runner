@@ -51,26 +51,18 @@ def validation_folders(validation_dir: Path) -> Dict[str, Path]:
     return {folder: (validation_dir / folder) for folder in _FOLDER_NAMES}
 
 
-@pytest.fixture(params=["1.0.0"])
+@pytest.fixture
 def docker_container(
     validation_folders: Dict[str, Path],
     host_folders: Dict[str, Path],
     docker_client: docker.DockerClient,
     docker_image_key: str,
     container_variables: Dict,
-    request,
 ) -> docker.models.containers.Container:
     # copy files to input folder, copytree needs to not have the input folder around.
     host_folders["input"].rmdir()
     shutil.copytree(validation_folders["input"], host_folders["input"])
     assert Path(host_folders["input"]).exists()
-    if request.param == "1.0.0":
-        # NOTE: in this version all the files are copied in a flat file system (e.g. input_1 unzipped in /inputs, same for input_2, ...)
-        for file_path in host_folders["input"].glob("*"):
-            if file_path.is_dir():
-                for file_inside_folder in file_path.glob("*"):
-                    shutil.move(f"{file_inside_folder}", host_folders["input"])
-                file_path.rmdir()
 
     # run the container (this may take some time)
     try:
