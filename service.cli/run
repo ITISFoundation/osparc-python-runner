@@ -19,7 +19,6 @@ INPUT_4=$INPUT_FOLDER/input_4
 export INPUT_4
 INPUT_5=$INPUT_FOLDER/input_5
 export INPUT_5
-
 OUTPUT_1=$OUTPUT_FOLDER/output_1
 export OUTPUT_1
 OUTPUT_2=$OUTPUT_FOLDER/output_2
@@ -28,7 +27,6 @@ OUTPUT_3=$OUTPUT_FOLDER/output_3
 export OUTPUT_3
 OUTPUT_4=$OUTPUT_FOLDER/output_4
 export OUTPUT_4
-
 
 exec execute.sh
         

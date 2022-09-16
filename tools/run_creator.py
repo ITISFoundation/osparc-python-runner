@@ -36,18 +36,33 @@ def get_input_config(metadata_file: Path) -> Dict:
     return inputs
 
 
+def get_output_config(metadata_file: Path) -> Dict:
+    inputs = {}
+    with metadata_file.open() as fp:
+        metadata = yaml.safe_load(fp)
+        if "outputs" in metadata:
+            inputs = metadata["outputs"]
+    return inputs
+
+
 def main(args=None) -> int:
     try:
         parser = argparse.ArgumentParser(description=__doc__)
-        parser.add_argument("--metadata", help="The metadata yaml of the node",
-                            type=Path, required=False, default="/metadata/metadata.yml")
         parser.add_argument(
-            "--runscript", help="The run script", type=Path, required=True)
+            "--metadata",
+            help="The metadata yaml of the node",
+            type=Path,
+            required=False,
+            default="/metadata/metadata.yml",
+        )
+        parser.add_argument(
+            "--runscript", help="The run script", type=Path, required=True
+        )
         options = parser.parse_args(args)
 
         # generate variables for input
-        input_script = ["""
-#!/bin/sh
+        input_script = [
+            """#!/bin/sh
 #---------------------------------------------------------------
 # AUTO-GENERATED CODE, do not modify this will be overwritten!!!
 #---------------------------------------------------------------
@@ -58,26 +73,32 @@ IFS=$(printf '\\n\\t')
 cd "$(dirname "$0")"
 json_input=$INPUT_FOLDER/inputs.json
         """
-                        ]
+        ]
         input_config = get_input_config(options.metadata)
         for input_key, input_value in input_config.items():
             if "data:" in input_value["type"]:
-                filename = input_key
-                if "fileToKeyMap" in input_value and len(input_value["fileToKeyMap"]) > 0:
-                    filename, _ = next(
-                        iter(input_value["fileToKeyMap"].items()))
-                input_script.append(
-                    f"{str(input_key).upper()}=$INPUT_FOLDER/{str(filename)}")
-                input_script.append(f"export {str(input_key).upper()}")
+                folder_name = input_key
+                input_script.append(f"{input_key.upper()}=$INPUT_FOLDER/{folder_name}")
+                input_script.append(f"export {input_key.upper()}")
             else:
                 input_script.append(
-                    f"{str(input_key).upper()}=$(< \"$json_input\" jq '.{input_key}')")
-                input_script.append(f"export {str(input_key).upper()}")
-
-        input_script.extend(["""
+                    f"{input_key.upper()}=$(< \"$json_input\" jq '.{input_key}')"
+                )
+                input_script.append(f"export {input_key.upper()}")
+        for output_key, output_value in get_output_config(options.metadata).items():
+            if "data:" in output_value["type"]:
+                folder_name = output_key
+                input_script.append(
+                    f"{output_key.upper()}=$OUTPUT_FOLDER/{folder_name}"
+                )
+                input_script.append(f"export {output_key.upper()}")
+        input_script.extend(
+            [
+                """
 exec execute.sh
         """
-                             ])
+            ]
+        )
 
         # write shell script
         shell_script = str("\n").join(input_script)
