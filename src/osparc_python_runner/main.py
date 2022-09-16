@@ -18,10 +18,7 @@ except KeyError:
     raise ValueError("Required env vars {ENVIRONS} were not set")
 
 # NOTE: sync with schema in metadata!!
-NUM_INPUTS = 5
 NUM_OUTPUTS = 4
-OUTPUT_SUBFOLDER_ENV_TEMPLATE = "OUTPUT_{}"
-OUTPUT_SUBFOLDER_TEMPLATE = "output_{}"
 OUTPUT_FILE_TEMPLATE = "output_{}.zip"
 
 
@@ -75,7 +72,7 @@ def _show_io_environments() -> None:
             "%s ENVs available: %s",
             io_type.capitalize(),
             json.dumps(
-                filter(lambda x: f"{io_type.upper()}_" in x, os.environ), indent=2
+                list(filter(lambda x: f"{io_type.upper()}_" in x, os.environ)), indent=2
             ),
         )
 
