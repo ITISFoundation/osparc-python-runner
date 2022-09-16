@@ -29,9 +29,20 @@ def test_progress():
         time.sleep(0.001)
 
 
-def test_cwd():
+def test_inputs():
     assert (Path(os.environ["INPUT_FOLDER"]) / "input_script_1.py").exists()
     assert (Path(os.environ["INPUT_FOLDER"]) / "requirements.txt").exists()
+
+
+def test_outputs():
+    """write a file in each output"""
+    for output_folder_env in [*(f"OUTPUT_{i}" for i in range(1, 5))]:
+        folder = Path(os.environ[output_folder_env])
+        assert folder.exists()
+        for number in range(1, 3):
+            file = Path(folder) / f"some_output_{number}_file"
+            file.write_text(f"Hello this is file {number}")
+            assert file.exists()
 
 
 if __name__ == "__main__":
