@@ -8,11 +8,12 @@ import os
 import shutil
 from pathlib import Path
 from pprint import pformat
-from typing import Dict
-
-import pytest
+from typing import Dict, Iterator
 
 import docker
+import docker.errors
+import docker.models.containers
+import pytest
 
 _FOLDER_NAMES = ["input", "output"]
 _CONTAINER_FOLDER = Path("/home/scu/data")
@@ -51,28 +52,30 @@ def validation_folders(validation_dir: Path) -> Dict[str, Path]:
     return {folder: (validation_dir / folder) for folder in _FOLDER_NAMES}
 
 
-@pytest.fixture(params=["1.0.0"])
+@pytest.fixture
 def docker_container(
     validation_folders: Dict[str, Path],
     host_folders: Dict[str, Path],
     docker_client: docker.DockerClient,
     docker_image_key: str,
     container_variables: Dict,
-    request,
-) -> docker.models.containers.Container:
+) -> Iterator[docker.models.containers.Container]:
     # copy files to input folder, copytree needs to not have the input folder around.
     host_folders["input"].rmdir()
     shutil.copytree(validation_folders["input"], host_folders["input"])
     assert Path(host_folders["input"]).exists()
-    if request.param == "1.0.0":
-        # NOTE: in this version all the files are copied in a flat file system (e.g. input_1 unzipped in /inputs, same for input_2, ...)
-        for file_path in host_folders["input"].glob("*"):
-            if file_path.is_dir():
-                for file_inside_folder in file_path.glob("*"):
-                    shutil.move(f"{file_inside_folder}", host_folders["input"])
-                file_path.rmdir()
+    # prepare output folders
+    host_folders["output"].rmdir()
+    for output_folder in validation_folders["output"].glob("*"):
+        if not output_folder.is_dir():
+            continue
+        # create the same folder in the output
+        host_output_folder = host_folders["output"] / output_folder.name
+        host_output_folder.mkdir(parents=True)
+        assert host_output_folder.exists()
 
     # run the container (this may take some time)
+    container = None
     try:
         volumes = {
             host_folders[folder]: {
@@ -88,6 +91,7 @@ def docker_container(
             volumes=volumes,
             environment=container_variables,
         )
+        assert isinstance(container, docker.models.containers.Container)
         response = container.wait()
         if response["StatusCode"] > 0:
             logs = container.logs(timestamps=True)
@@ -105,6 +109,7 @@ def docker_container(
             yield container
     except docker.errors.ContainerError as exc:
         # the container did not run correctly
+        assert isinstance(container, docker.models.containers.Container)
         pytest.fail(
             "The container stopped with exit code {}\n\n\ncommand:\n {}, \n\n\nlog:\n{}".format(
                 exc.exit_status,
@@ -117,7 +122,9 @@ def docker_container(
         )
     finally:
         # cleanup
-        container.remove()
+        if container:
+            assert isinstance(container, docker.models.containers.Container)
+            container.remove()
 
 
 def _convert_to_simcore_labels(image_labels: Dict) -> Dict:
@@ -135,36 +142,37 @@ def _convert_to_simcore_labels(image_labels: Dict) -> Dict:
 
 
 def test_run_container(
-    validation_folders: Dict,
-    host_folders: Dict,
+    validation_folders: Dict[str, Path],
+    host_folders: Dict[str, Path],
     docker_container: docker.models.containers.Container,
 ):
     for folder in _FOLDER_NAMES:
-        if folder != "input":
-            # test if the files that should be there are actually there and correct
-            list_of_files = [
-                x.name
-                for x in validation_folders[folder].iterdir()
-                if not ".gitkeep" in x.name
-            ]
-            for file_name in list_of_files:
-                assert Path(
-                    host_folders[folder] / file_name
-                ).exists(), f"missing {file_name=} in {host_folders[folder]=}"
-            match, mismatch, errors = filecmp.cmpfiles(
-                host_folders[folder],
-                validation_folders[folder],
-                list_of_files,
-                shallow=False,
-            )
-            # assert not mismatch, "wrong/incorrect files in {}".format(host_folders[folder])
-            assert not errors, "missing files in {}".format(host_folders[folder])
+        # test if the files that should be there are actually there and correct
+        list_of_files = [
+            x.relative_to(validation_folders[folder])
+            for x in validation_folders[folder].rglob("*")
+            if x.is_file() and not ".gitkeep" in x.name
+        ]
+        for file_name in list_of_files:
+            assert Path(
+                host_folders[folder] / file_name
+            ).exists(), f"missing {file_name=} in {host_folders[folder]=}"
+        match, mismatch, errors = filecmp.cmpfiles(
+            host_folders[folder],
+            validation_folders[folder],
+            list_of_files,
+            shallow=False,
+        )
+        assert match
+        assert not mismatch
+        # assert not mismatch, "wrong/incorrect files in {}".format(host_folders[folder])
+        assert not errors, "missing files in {}".format(host_folders[folder])
 
     # check the output is correct based on container labels
     output_cfg = {}
     output_cfg_file = Path(host_folders["output"] / "outputs.json")
     if output_cfg_file.exists():
-        with output_cfg_file.open() as fp:
+        with output_cfg_file.open(encoding="utf-8") as fp:
             output_cfg = json.load(fp)
 
     container_labels = docker_container.labels
