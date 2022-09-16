@@ -109,7 +109,7 @@ def setup():
     venv_dir = Path.home() / ".venv"
     bash_input_env_export = [f"export {env}={path}" for env, path in input_envs.items()]
     bash_output_env_export = [
-        f"export {env}={path}" for env, path in output_envs.items()
+        f"export {env}='{path}'" for env, path in output_envs.items()
     ]
     script = [
         "#!/bin/sh",
