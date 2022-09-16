@@ -172,7 +172,7 @@ def test_run_container(
     output_cfg = {}
     output_cfg_file = Path(host_folders["output"] / "outputs.json")
     if output_cfg_file.exists():
-        with output_cfg_file.open() as fp:
+        with output_cfg_file.open(encoding="utf-8") as fp:
             output_cfg = json.load(fp)
 
     container_labels = docker_container.labels
