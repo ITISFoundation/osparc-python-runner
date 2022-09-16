@@ -8,6 +8,7 @@ black
 coverage
 docker
 jsonschema
+pylint
 pytest
 pytest-cookies
 pytest-cov
