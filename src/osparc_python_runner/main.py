@@ -11,15 +11,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("osparc-python-main")
 
 
-ENVIRONS = ["INPUT_FOLDER", "OUTPUT_FOLDER"]
-try:
-    INPUT_FOLDER, OUTPUT_FOLDER = [Path(os.environ[v]) for v in ENVIRONS]
-except KeyError:
-    raise ValueError("Required env vars {ENVIRONS} were not set")
-
-# NOTE: sync with schema in metadata!!
-NUM_OUTPUTS = 4
-OUTPUT_FILE_TEMPLATE = "output_{}.zip"
+INPUT_1 = Path(os.environ["INPUT_1"])
 
 
 def _find_user_code_entrypoint(code_dir: Path) -> Path:
@@ -55,7 +47,7 @@ def _ensure_pip_requirements(code_dir: Path) -> Path:
             f"pipreqs --savepath={requirements} --force {code_dir}".split(),
             shell=False,
             check=True,
-            cwd=INPUT_FOLDER,
+            cwd=INPUT_1,
         )
 
         # TODO log subprocess.run
@@ -82,8 +74,8 @@ def setup():
     logger.info("Available data:")
     os.system("ls -tlah")
 
-    user_code_entrypoint = _find_user_code_entrypoint(INPUT_FOLDER)
-    requirements_txt = _ensure_pip_requirements(INPUT_FOLDER)
+    user_code_entrypoint = _find_user_code_entrypoint(INPUT_1)
+    requirements_txt = _ensure_pip_requirements(INPUT_1)
 
     logger.info("Preparing launch script ...")
     venv_dir = Path.home() / ".venv"
@@ -105,19 +97,7 @@ def setup():
 
 
 def teardown():
-    logger.info("Zipping output...")
-    for n in range(1, NUM_OUTPUTS + 1):
-        output_path = OUTPUT_FOLDER / f"output_{n}"
-        archive_file_path = OUTPUT_FOLDER / OUTPUT_FILE_TEMPLATE.format(n)
-        logger.info("Zipping %s into %s...", output_path, archive_file_path)
-        shutil.make_archive(
-            f"{(archive_file_path.parent / archive_file_path.stem)}",
-            format="zip",
-            root_dir=output_path,
-            logger=logger,
-        )
-        logger.info("Zipping %s into %s done", output_path, archive_file_path)
-    logger.info("Zipping done.")
+    logger.info("Completed")
 
 
 if __name__ == "__main__":
