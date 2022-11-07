@@ -40,8 +40,6 @@ dill==0.3.5.1
     # via pylint
 docker==6.0.0
     # via -r requirements.in
-exceptiongroup==1.0.0
-    # via pytest
 idna==3.4
     # via requests
 iniconfig==1.1.1
@@ -54,7 +52,7 @@ jinja2==3.1.2
     #   jinja2-time
 jinja2-time==0.2.0
     # via cookiecutter
-jsonschema==4.16.0
+jsonschema==4.17.0
     # via -r requirements.in
 lazy-object-proxy==1.7.1
     # via astroid
@@ -119,12 +117,6 @@ termcolor==2.0.1
     # via pytest-sugar
 text-unidecode==1.3
     # via python-slugify
-tomli==2.0.1
-    # via
-    #   black
-    #   coverage
-    #   pylint
-    #   pytest
 tomlkit==0.11.4
     # via pylint
 urllib3==1.26.12
