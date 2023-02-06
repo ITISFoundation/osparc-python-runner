@@ -6,7 +6,7 @@
 #
 arrow==1.2.3
     # via jinja2-time
-astroid==2.12.9
+astroid==2.14.1
     # via pylint
 attrs==22.1.0
     # via
@@ -36,7 +36,7 @@ coverage[toml]==6.4.4
     # via
     #   -r requirements.in
     #   pytest-cov
-dill==0.3.5.1
+dill==0.3.6
     # via pylint
 docker==6.0.1
     # via -r requirements.in
@@ -75,7 +75,7 @@ platformdirs==2.5.2
     #   pylint
 pluggy==1.0.0
     # via pytest
-pylint==2.15.2
+pylint==2.16.1
     # via -r requirements.in
 pyparsing==3.0.9
     # via packaging
