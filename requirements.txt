@@ -14,7 +14,7 @@ attrs==22.1.0
     #   pytest
 binaryornot==0.4.4
     # via cookiecutter
-black==22.12.0
+black==23.1.0
     # via -r requirements.in
 bump2version==1.0.1
     # via bumpversion
@@ -62,8 +62,9 @@ mccabe==0.7.0
     # via pylint
 mypy-extensions==0.4.3
     # via black
-packaging==21.3
+packaging==23.0
     # via
+    #   black
     #   docker
     #   pytest
     #   pytest-sugar
@@ -77,8 +78,6 @@ pluggy==1.0.0
     # via pytest
 pylint==2.16.2
     # via -r requirements.in
-pyparsing==3.0.9
-    # via packaging
 pyrsistent==0.18.1
     # via jsonschema
 pytest==7.2.1
