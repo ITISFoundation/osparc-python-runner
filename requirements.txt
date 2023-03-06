@@ -80,7 +80,7 @@ pylint==2.16.2
     # via -r requirements.in
 pyrsistent==0.18.1
     # via jsonschema
-pytest==7.2.1
+pytest==7.2.2
     # via
     #   -r requirements.in
     #   pytest-cookies
