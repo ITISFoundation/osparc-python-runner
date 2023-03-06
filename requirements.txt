@@ -76,7 +76,7 @@ platformdirs==2.5.2
     #   pylint
 pluggy==1.0.0
     # via pytest
-pylint==2.16.2
+pylint==2.16.3
     # via -r requirements.in
 pyrsistent==0.18.1
     # via jsonschema
