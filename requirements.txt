@@ -88,7 +88,7 @@ pytest==7.2.2
     #   pytest-instafail
     #   pytest-mock
     #   pytest-sugar
-pytest-cookies==0.6.1
+pytest-cookies==0.7.0
     # via -r requirements.in
 pytest-cov==4.0.0
     # via -r requirements.in
