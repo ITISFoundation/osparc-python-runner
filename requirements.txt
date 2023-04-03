@@ -92,7 +92,7 @@ pytest-cookies==0.7.0
     # via -r requirements.in
 pytest-cov==4.0.0
     # via -r requirements.in
-pytest-instafail==0.4.2
+pytest-instafail==0.5.0
     # via -r requirements.in
 pytest-mock==3.10.0
     # via -r requirements.in
