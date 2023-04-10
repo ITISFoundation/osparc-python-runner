@@ -6,7 +6,7 @@
 #
 arrow==1.2.3
     # via jinja2-time
-astroid==2.15.0
+astroid==2.15.2
     # via pylint
 attrs==22.1.0
     # via jsonschema
@@ -74,7 +74,7 @@ platformdirs==2.5.2
     #   pylint
 pluggy==1.0.0
     # via pytest
-pylint==2.17.1
+pylint==2.17.2
     # via -r requirements.in
 pyrsistent==0.18.1
     # via jsonschema
