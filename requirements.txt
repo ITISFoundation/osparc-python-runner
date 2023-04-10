@@ -9,9 +9,7 @@ arrow==1.2.3
 astroid==2.15.0
     # via pylint
 attrs==22.1.0
-    # via
-    #   jsonschema
-    #   pytest
+    # via jsonschema
 binaryornot==0.4.4
     # via cookiecutter
 black==23.3.0
@@ -80,7 +78,7 @@ pylint==2.17.1
     # via -r requirements.in
 pyrsistent==0.18.1
     # via jsonschema
-pytest==7.2.2
+pytest==7.3.0
     # via
     #   -r requirements.in
     #   pytest-cookies
