@@ -33,7 +33,7 @@ pandas==1.2.5
     #   seaborn
 pillow==9.0.1
     # via matplotlib
-pipreqs==0.4.10
+pipreqs==0.4.12
     # via -r requirements.in
 pyparsing==2.4.7
     # via matplotlib
