@@ -21,6 +21,8 @@ RUN apt-get update \
     && apt-get -y install --no-install-recommends \
     jq \
     && rm --recursive --force /var/lib/apt/lists/*
+# install uv
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
 # -------------------------- Build stage -------------------
 # Installs build/package management tools and third party dependencies

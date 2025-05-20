@@ -117,17 +117,16 @@ def setup():
         "set -o nounset",
         "IFS=$(printf '\\n\\t')",
         'echo "Creating virtual environment ..."',
-        f'python3 -m venv --system-site-packages --symlinks --upgrade "{venv_dir}"',
-        f'"{venv_dir}/bin/pip" install -U pip wheel setuptools',
-        f'"{venv_dir}/bin/pip" install -r "{requirements_txt}"',
+        f'python3 -m virtualenv --system-site-packages --symlinks --without-pip "{venv_dir}"',
+        'uv pip install -U pip wheel setuptools',
+        f'uv pip install -r "{requirements_txt}"',
         "\n".join(bash_input_env_export),
         "\n".join(bash_output_env_export),
         f'echo "Executing code {user_code_entrypoint.name}..."',
         f'"{venv_dir}/bin/python3" "{user_code_entrypoint}"',
         'echo "DONE ..."',
     ]
-    main_script_path = Path("main.sh")
-    main_script_path.write_text("\n".join(script))
+    Path("main.sh").write_text("\n".join(script))
 
 
 def teardown():
