@@ -1,27 +1,6 @@
 name: build/deploy osparc-python-runner
 
-on:
-  push:
-    branches:
-      - "*"
-    tags-ignore:
-      - "*"
-    paths-ignore:
-      - "*.md"
-      - "*.png"
-      - "*.svg"
-      - "docs/**"
-      - ".vscode/**"
-  pull_request:
-    branches:
-      - "*"
-    paths-ignore:
-      - "*.md"
-      - "*.png"
-      - "*.svg"
-      - "docs/**"
-      - ".vscode/**"
-      - ".vscode-template/**"
+on: ["push", "pull_request"]
 
 env:
   # secrets can be set in settings/secrets on github
