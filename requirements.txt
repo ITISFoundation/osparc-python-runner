@@ -4,11 +4,9 @@
 #
 #    pip-compile --output-file=requirements.txt
 #
-arrow==1.2.3
+arrow==1.2.2
     # via jinja2-time
-astroid==2.15.4
-    # via pylint
-attrs==23.1.0
+attrs==21.4.0
     # via
     #   jsonschema
     #   referencing
@@ -20,33 +18,29 @@ bump2version==1.0.1
     # via bumpversion
 bumpversion==0.6.0
     # via -r requirements.in
-certifi==2023.7.22
+certifi==2021.10.8
     # via requests
-chardet==5.0.0
+chardet==4.0.0
     # via binaryornot
-charset-normalizer==2.1.1
+charset-normalizer==2.0.12
     # via requests
-click==8.1.3
+click==8.1.0
     # via
     #   black
     #   cookiecutter
 cookiecutter==2.1.1
     # via pytest-cookies
-coverage[toml]==6.4.4
+coverage[toml]==6.3.2
     # via
     #   -r requirements.in
     #   pytest-cov
-dill==0.3.6
-    # via pylint
-docker==6.1.3
+docker==6.0.0
     # via -r requirements.in
-idna==3.4
+idna==3.3
     # via requests
 iniconfig==1.1.1
     # via pytest
-isort==5.10.1
-    # via pylint
-jinja2==3.1.2
+jinja2==3.1.1
     # via
     #   cookiecutter
     #   jinja2-time
@@ -54,14 +48,8 @@ jinja2-time==0.2.0
     # via cookiecutter
 jsonschema==4.19.0
     # via -r requirements.in
-jsonschema-specifications==2023.6.1
-    # via jsonschema
-lazy-object-proxy==1.7.1
-    # via astroid
 markupsafe==2.1.1
     # via jinja2
-mccabe==0.7.0
-    # via pylint
 mypy-extensions==0.4.3
     # via black
 packaging==23.0
@@ -70,17 +58,19 @@ packaging==23.0
     #   docker
     #   pytest
     #   pytest-sugar
-pathspec==0.10.1
+pathspec==0.9.0
     # via black
-platformdirs==2.5.2
-    # via
-    #   black
-    #   pylint
+platformdirs==2.5.1
+    # via black
 pluggy==1.0.0
     # via pytest
-pylint==2.17.3
-    # via -r requirements.in
-pytest==7.4.0
+py==1.11.0
+    # via pytest
+pyparsing==3.0.7
+    # via packaging
+pyrsistent==0.18.1
+    # via jsonschema
+pytest==7.1.3
     # via
     #   -r requirements.in
     #   pytest-cookies
@@ -100,17 +90,13 @@ pytest-sugar==0.9.7
     # via -r requirements.in
 python-dateutil==2.8.2
     # via arrow
-python-slugify==6.1.2
+python-slugify==6.1.1
     # via cookiecutter
 pyyaml==6.0.1
     # via
     #   -r requirements.in
     #   cookiecutter
-referencing==0.29.1
-    # via
-    #   jsonschema
-    #   jsonschema-specifications
-requests==2.31.0
+requests==2.27.1
     # via
     #   cookiecutter
     #   docker
@@ -120,17 +106,18 @@ rpds-py==0.8.10
     #   referencing
 six==1.16.0
     # via python-dateutil
-termcolor==2.2.0
+termcolor==1.1.0
     # via pytest-sugar
 text-unidecode==1.3
     # via python-slugify
-tomlkit==0.11.4
-    # via pylint
-urllib3==1.26.12
+tomli==2.0.1
+    # via
+    #   black
+    #   coverage
+    #   pytest
+urllib3==1.26.9
     # via
     #   docker
     #   requests
-websocket-client==1.4.1
+websocket-client==1.3.2
     # via docker
-wrapt==1.14.1
-    # via astroid

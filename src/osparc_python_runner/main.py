@@ -1,15 +1,28 @@
 import json
 import logging
 import os
+import shutil
 import subprocess
 import sys
 from pathlib import Path
+from typing import Dict
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("osparc-python-main")
 
 
-INPUT_1 = Path(os.environ["INPUT_1"])
+ENVIRONS = ["INPUT_FOLDER", "OUTPUT_FOLDER"]
+try:
+    INPUT_FOLDER, OUTPUT_FOLDER = [Path(os.environ[v]) for v in ENVIRONS]
+except KeyError:
+    raise ValueError("Required env vars {ENVIRONS} were not set")
+
+# NOTE: sync with schema in metadata!!
+NUM_INPUTS = 5
+NUM_OUTPUTS = 4
+OUTPUT_SUBFOLDER_ENV_TEMPLATE = "OUTPUT_{}"
+OUTPUT_SUBFOLDER_TEMPLATE = "output_{}"
+OUTPUT_FILE_TEMPLATE = "output_{}.zip"
 
 
 def _find_user_code_entrypoint(code_dir: Path) -> Path:
@@ -45,44 +58,59 @@ def _ensure_pip_requirements(code_dir: Path) -> Path:
             f"pipreqs --savepath={requirements} --force {code_dir}".split(),
             shell=False,
             check=True,
-            cwd=INPUT_1,
+            cwd=INPUT_FOLDER,
         )
 
         # TODO log subprocess.run
 
     else:
         requirements = requirements[0]
-        logger.info("Found: %s", requirements)
+        logger.info(f"Found: {requirements}")
     return requirements
 
 
-def _show_io_environments() -> None:
-    for io_type in ["input", "output"]:
-        logger.info(
-            "%s ENVs available: %s",
-            io_type.capitalize(),
-            json.dumps(
-                list(
-                    filter(
-                        lambda x, io_type=io_type: f"{io_type.upper()}_" in x,
-                        os.environ,
-                    )
-                ),
-                indent=2,
-            ),
-        )
+# TODO: Next version of integration will take care of this and maybe the ENVs as well
+def _ensure_output_subfolders_exist() -> Dict[str, str]:
+    output_envs = {}
+    for n in range(1, NUM_OUTPUTS + 1):
+        output_sub_folder_env = f"OUTPUT_{n}"
+        output_sub_folder = OUTPUT_FOLDER / OUTPUT_SUBFOLDER_TEMPLATE.format(n)
+        # NOTE: exist_ok for forward compatibility in case they are already created
+        output_sub_folder.mkdir(parents=True, exist_ok=True)
+        output_envs[output_sub_folder_env] = f"{output_sub_folder}"
+    logger.info(
+        "Output ENVs available: %s",
+        json.dumps(output_envs, indent=2),
+    )
+    return output_envs
+
+
+def _ensure_input_environment() -> Dict[str, str]:
+    input_envs = {
+        f"INPUT_{n}": os.environ[f"INPUT_{n}"] for n in range(1, NUM_INPUTS + 1)
+    }
+    logger.info(
+        "Input ENVs available: %s",
+        json.dumps(input_envs, indent=2),
+    )
+    return input_envs
 
 
 def setup():
-    _show_io_environments()
+    input_envs = _ensure_input_environment()
+    output_envs = _ensure_output_subfolders_exist()
     logger.info("Available data:")
     os.system("ls -tlah")
 
-    user_code_entrypoint = _find_user_code_entrypoint(INPUT_1)
-    requirements_txt = _ensure_pip_requirements(INPUT_1)
+    user_code_entrypoint = _find_user_code_entrypoint(INPUT_FOLDER)
+    requirements_txt = _ensure_pip_requirements(INPUT_FOLDER)
 
     logger.info("Preparing launch script ...")
     venv_dir = Path.home() / ".venv"
+    bash_input_env_export = [f"export {env}={path}" for env, path in input_envs.items()]
+    bash_output_env_export = [
+        f"export {env}='{path}'" for env, path in output_envs.items()
+    ]
     script = [
         "#!/bin/sh",
         "set -o errexit",
@@ -92,16 +120,30 @@ def setup():
         f'python3 -m venv --system-site-packages --symlinks --upgrade "{venv_dir}"',
         f'"{venv_dir}/bin/pip" install -U pip wheel setuptools',
         f'"{venv_dir}/bin/pip" install -r "{requirements_txt}"',
+        "\n".join(bash_input_env_export),
+        "\n".join(bash_output_env_export),
         f'echo "Executing code {user_code_entrypoint.name}..."',
         f'"{venv_dir}/bin/python3" "{user_code_entrypoint}"',
         'echo "DONE ..."',
     ]
     main_script_path = Path("main.sh")
-    main_script_path.write_text("\n".join(script), encoding="utf-8")
+    main_script_path.write_text("\n".join(script))
 
 
 def teardown():
-    logger.info("Completed")
+    logger.info("Zipping output...")
+    for n in range(1, NUM_OUTPUTS + 1):
+        output_path = OUTPUT_FOLDER / f"output_{n}"
+        archive_file_path = OUTPUT_FOLDER / OUTPUT_FILE_TEMPLATE.format(n)
+        logger.info("Zipping %s into %s...", output_path, archive_file_path)
+        shutil.make_archive(
+            f"{(archive_file_path.parent / archive_file_path.stem)}",
+            format="zip",
+            root_dir=output_path,
+            logger=logger,
+        )
+        logger.info("Zipping %s into %s done", output_path, archive_file_path)
+    logger.info("Zipping done.")
 
 
 if __name__ == "__main__":

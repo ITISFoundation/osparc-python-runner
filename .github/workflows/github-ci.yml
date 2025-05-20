@@ -1,27 +1,6 @@
 name: build/deploy osparc-python-runner
 
-on:
-  push:
-    branches:
-      - "*"
-    tags-ignore:
-      - "*"
-    paths-ignore:
-      - "*.md"
-      - "*.png"
-      - "*.svg"
-      - "docs/**"
-      - ".vscode/**"
-  pull_request:
-    branches:
-      - "*"
-    paths-ignore:
-      - "*.md"
-      - "*.png"
-      - "*.svg"
-      - "docs/**"
-      - ".vscode/**"
-      - ".vscode-template/**"
+on: ["push", "pull_request"]
 
 env:
   # secrets can be set in settings/secrets on github
@@ -36,7 +15,7 @@ jobs:
     strategy:
       matrix:
         python: ["3.8"]
-        os: [ubuntu-20.04]
+        os: [ubuntu-22.04]
         node: [10]
       fail-fast: false
     steps:
@@ -85,3 +64,4 @@ jobs:
         run: |
           ./ci/helpers/dockerhub_login.bash
           make push-version
+

@@ -39,7 +39,7 @@ def _convert_to_simcore_labels(image_labels: Dict) -> Dict:
 # FIXTURES
 @pytest.fixture
 def osparc_service_labels_jsonschema(tmp_path) -> Dict:
-    url = "https://raw.githubusercontent.com/ITISFoundation/osparc-simcore/master/api/specs/common/schemas/node-meta-v0.0.1.json"
+    url = "https://raw.githubusercontent.com/ITISFoundation/osparc-simcore/master/api/specs/director/schemas/node-meta-v0.0.1.json"
     file_name = tmp_path / "service_label.json"
     _download_url(url, file_name)
     with file_name.open() as fp:
