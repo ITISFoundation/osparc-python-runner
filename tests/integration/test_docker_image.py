@@ -46,6 +46,8 @@ def osparc_service_labels_jsonschema(tmp_path) -> Dict:
     _download_url(url, file_name)
     with file_name.open() as fp:
         json_schema = json.load(fp)
+        # artifically add to legacy scheme new icon field which is optional
+        # NOTE: a prpoer fix is to migrate this repository to using ooil
         json_schema["properties"]["icon"] = deepcopy(json_schema["properties"]["thumbnail"])
         return json_schema
 
