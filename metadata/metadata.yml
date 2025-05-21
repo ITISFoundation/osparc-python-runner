@@ -5,7 +5,7 @@ thumbnail: https://raw.githubusercontent.com/ZurichMedTech/s4l-assets/main/app/t
 key: simcore/services/comp/osparc-python-runner
 type: computational
 integration-version: 1.0.0
-version: 1.4.0
+version: 1.4.1
 contact: anderegg@itis.swiss
 authors:
   - name: Sylvain Anderegg
