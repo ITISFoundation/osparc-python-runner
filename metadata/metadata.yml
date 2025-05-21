@@ -1,9 +1,11 @@
 name: oSparc Python Runner
+description: https://raw.githubusercontent.com/ZurichMedTech/s4l-assets/refs/heads/main/app/full/services/simcore_services_comp_osparc-python-runner.md
+icon: https://raw.githubusercontent.com/ZurichMedTech/s4l-assets/main/app/icons/s4l/simcore_services_comp_osparc-python-runner.png
+thumbnail: https://raw.githubusercontent.com/ZurichMedTech/s4l-assets/main/app/thumbnails/s4l/simcore_services_comp_osparc-python-runner.png
 key: simcore/services/comp/osparc-python-runner
 type: computational
 integration-version: 1.0.0
 version: 1.4.0
-description: oSparc Python Runner
 contact: anderegg@itis.swiss
 authors:
   - name: Sylvain Anderegg
