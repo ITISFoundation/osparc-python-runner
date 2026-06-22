@@ -30,7 +30,7 @@ click==8.1.8
     #   cookiecutter
 cookiecutter==2.6.0
     # via pytest-cookies
-coverage[toml]==7.8.0
+coverage[toml]==7.10.7
     # via
     #   -r requirements.in
     #   pytest-cov
@@ -66,7 +66,9 @@ pathspec==0.12.1
 platformdirs==4.3.8
     # via black
 pluggy==1.6.0
-    # via pytest
+    # via
+    #   pytest
+    #   pytest-cov
 pygments==2.19.1
     # via rich
 pytest==8.3.5
@@ -79,7 +81,7 @@ pytest==8.3.5
     #   pytest-sugar
 pytest-cookies==0.7.0
     # via -r requirements.in
-pytest-cov==6.1.1
+pytest-cov==7.1.0
     # via -r requirements.in
 pytest-instafail==0.5.0
     # via -r requirements.in
