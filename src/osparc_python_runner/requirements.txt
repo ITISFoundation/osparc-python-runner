@@ -186,7 +186,7 @@ tzdata==2025.2
     # via pandas
 urllib3==2.4.0
     # via requests
-virtualenv==20.31.2
+virtualenv==21.14.13
     # via -r requirements.in
 wcwidth==0.2.13
     # via prompt-toolkit
